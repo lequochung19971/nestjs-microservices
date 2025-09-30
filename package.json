@@ -1,0 +1,13 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "@nestjs/swagger": "^11.2.0",
+    "swagger-ui-express": "^5.0.1",
+    "user": "^0.0.0"
+  },
+  "devDependencies": {
+    "lerna": "^8.2.3"
+  }
+}

@@ -1,0 +1,1 @@
+export const KEYCLOAK_CONFIG = 'KEYCLOAK_CONFIG';

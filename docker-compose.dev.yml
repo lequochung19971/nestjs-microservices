@@ -1,0 +1,204 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for User Service
+  postgres-user:
+    image: postgres:15-alpine
+    container_name: microservices-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: user_user # [service_name]_user
+      POSTGRES_PASSWORD: user_password
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_auth_data_dev:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-network-dev
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U user_user -d user_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Database for Keycloak
+  postgres-keycloak:
+    image: postgres:15-alpine
+    container_name: microservices-postgres-keycloak-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keycloak_db
+      POSTGRES_USER: keycloak_user # [service_name]_user
+      POSTGRES_PASSWORD: keycloak_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_keycloak_data_dev:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-network-dev
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U keycloak_user -d keycloak_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Database for Products Service
+  postgres-products:
+    image: postgres:15-alpine
+    container_name: microservices-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: products_db
+      POSTGRES_USER: products_user # [service_name]_user
+      POSTGRES_PASSWORD: products_password
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres_auth_data_dev:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-network-dev
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U products_user -d products_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # # Keycloak Service
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: microservices-keycloak-dev
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-keycloak:5432/keycloak_db
+      KC_DB_USERNAME: keycloak_user
+      KC_DB_PASSWORD: keycloak_password
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+      KC_HTTP_RELATIVE_PATH: /
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    networks:
+      - microservices-network-dev
+    command: start-dev
+
+  # User Service (Development)
+  user:
+    build:
+      context: .
+      dockerfile: ./docker/user.dev.Dockerfile
+      target: user-dev
+    container_name: microservices-user-dev
+    restart: unless-stopped
+    # environment:
+    #   NODE_ENV: development
+    #   PORT: 3001
+    #   DATABASE_URL: postgresql://user_user:user_password@postgres:5433/user_db
+    #   JWT_SECRET: your-super-secret-jwt-key-change-in-production
+    #   JWT_EXPIRES_IN: 1d
+    #   JWT_REFRESH_SECRET: your-super-secret-jwt-refresh-key-change-in-production
+    #   JWT_REFRESH_EXPIRES_IN: 7d
+    #   BCRYPT_ROUNDS: 12
+    #   LOG_LEVEL: debug
+    #   CORS_ORIGIN: http://localhost:3000
+    #   KEYCLOAK_URL: http://keycloak:8080
+    #   KEYCLOAK_REALM: master
+    #   KEYCLOAK_CLIENT_ID: user-service
+    #   KEYCLOAK_CLIENT_SECRET: your-client-secret
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./services/user:/app/services/user
+      - ./packages:/app/packages
+      - /app/services/user/node_modules
+      - /app/packages/*/node_modules
+    depends_on:
+      postgres-user:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    networks:
+      - microservices-network-dev
+    # healthcheck:
+    #   test: ['CMD', 'curl', '-f', 'http://localhost:3001/health']
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 40s
+
+  # # API Gateway (Development)
+  # api-gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/api-gateway.dev.Dockerfile
+  #     target: api-gateway-dev
+  #   container_name: microservices-api-gateway-dev
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3000
+  #     USER_SERVICE_URL: http://user:3001
+  #     KEYCLOAK_URL: http://keycloak:8080
+  #   ports:
+  #     - '3000:3000'
+  #   volumes:
+  #     - ./services/api-gateway:/app/services/api-gateway
+  #     - ./packages:/app/packages
+  #     - /app/services/api-gateway/node_modules
+  #     - /app/packages/*/node_modules
+  #   depends_on:
+  #     user:
+  #       condition: service_started
+  #     keycloak:
+  #       condition: service_started
+  #   networks:
+  #     - microservices-network-dev
+  # healthcheck:
+  #   test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+  #   interval: 30s
+  #   timeout: 10s
+  #   retries: 3
+  #   start_period: 40s
+
+  # # Development Tools (Optional)
+  # dev-tools:
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/dev.Dockerfile
+  #     target: dev-base
+  #   container_name: microservices-dev-tools
+  #   restart: unless-stopped
+  #   environment:
+  #     NODE_ENV: development
+  #   ports:
+  #     - '9229:9229' # Node.js debug port
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #     - /app/packages/*/node_modules
+  #     - /app/services/*/node_modules
+  #   networks:
+  #     - microservices-network-dev
+  #   command: ['tail', '-f', '/dev/null'] # Keep container running
+  #   profiles:
+  #     - tools
+
+volumes:
+  postgres_auth_data_dev:
+    driver: local
+  postgres_keycloak_data_dev:
+    driver: local
+
+networks:
+  microservices-network-dev:
+    driver: bridge
