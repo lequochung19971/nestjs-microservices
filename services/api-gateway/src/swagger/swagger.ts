@@ -1,0 +1,44 @@
+import { INestApplication } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppConfigService } from 'src/app-config';
+
+/**
+ * Sets up Swagger documentation for the API Gateway
+ *
+ * @param app NestJS application instance
+ * @param config Application configuration service
+ */
+export function setupSwagger(
+  app: INestApplication,
+  config: AppConfigService,
+): void {
+  // Only set up swagger in development mode
+  if (!config.isDevelopment()) {
+    return;
+  }
+
+  // Create Swagger document configuration
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('API Gateway')
+    .setDescription('API Gateway service for the microservices architecture')
+    .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'access-token',
+    )
+    .addTag('auth', 'Authentication endpoints')
+    .addTag('users', 'User profile management endpoints')
+    .addTag('admin', 'Admin-only endpoints')
+    .addTag('products', 'Product management endpoints')
+    .build();
+
+  // Create Swagger document
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  // Set up Swagger UI route
+  SwaggerModule.setup('api/docs', app, document);
+}

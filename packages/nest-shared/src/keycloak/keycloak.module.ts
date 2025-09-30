@@ -1,10 +1,9 @@
+import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { KeycloakService } from './keycloak.service';
+import { KEYCLOAK_CONFIG } from './constants';
 import { KeycloakAdminService } from './keycloak-admin.service';
 import { KeycloakConfig } from './keycloak.config';
-import { KEYCLOAK_CONFIG } from './constants';
-import { JwksConfig } from 'src/jwt-auth/jwks.config';
+import { KeycloakService } from './keycloak.service';
 
 @Module({
   // imports: [AppConfigModule, HttpModule],
