@@ -9,25 +9,18 @@ async function bootstrap() {
   // Enable validation pipeline
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
       transform: true,
+      whitelist: true,
       forbidNonWhitelisted: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
     }),
   );
 
   // Configure Swagger documentation
   const config = new DocumentBuilder()
-    .setTitle('User Service API')
-    .setDescription('The User service API documentation')
+    .setTitle('Media Service API')
+    .setDescription('The Media service API documentation')
     .setVersion('1.0')
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management endpoints')
-    .addTag('profile', 'User profile endpoints')
-    .addTag('preferences', 'User preferences endpoints')
-    .addTag('admin', 'Admin-only endpoints')
+    .addTag('media', 'Media management endpoints')
     .addBearerAuth(
       {
         type: 'http',
@@ -53,7 +46,7 @@ async function bootstrap() {
 
   const port = process.env.PORT;
   await app.listen(port);
-  console.log(`User service is running on port ${port}`);
+  console.log(`Media service is running on port ${port}`);
   console.log(
     `Swagger documentation available at http://localhost:${port}/api/docs`,
   );
