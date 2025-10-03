@@ -1,13 +1,10 @@
 import {
-  IsString,
-  IsEmail,
-  IsOptional,
   IsBoolean,
+  IsEmail,
   IsObject,
-  IsArray,
-  IsDate,
+  IsOptional,
+  IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class UserProfileDto {
   @IsOptional()

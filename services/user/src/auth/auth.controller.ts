@@ -26,7 +26,7 @@ import {
   RegisterDto,
   TokenDto,
   TokenResponse,
-} from 'nest-shared/contracts/auth';
+} from 'nest-shared/contracts';
 
 @ApiTags('auth')
 @Controller('auth')

@@ -15,9 +15,10 @@ import { ErrorMiddleware } from './middleware/error.middleware';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { ProxyService } from './services/proxy.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './modules/products';
-import { ApiClientModule } from './openapi/clients/api-client.module';
+import { CategoriesModule } from './modules/categories';
+import { ApiClientModule } from './api-clients/api-client.module';
 
 @Module({
   imports: [
@@ -54,8 +55,9 @@ import { ApiClientModule } from './openapi/clients/api-client.module';
       global: true,
     }),
     ApiClientModule,
-    UsersModule, // Import the Users module
+    AuthModule, // Import the Auth module
     ProductsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -12,18 +12,6 @@ async function bootstrap() {
   // Security middleware
   app.use(helmet());
 
-  // Global validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      transform: true,
-      forbidNonWhitelisted: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
-
   // CORS configuration
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
@@ -39,7 +27,7 @@ async function bootstrap() {
   await app.listen(port);
   logger.log(`API gateway service is running on port ${port}`);
   logger.log(
-    `Swagger documentation is available at http://localhost:${port}/api-docs`,
+    `Swagger documentation is available at http://localhost:${port}/api/docs`,
   );
 }
 bootstrap();

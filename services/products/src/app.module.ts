@@ -6,7 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DrizzleModule } from './db/drizzle.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { CategoriesModule } from '../modules/categories/categories.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
   imports: [

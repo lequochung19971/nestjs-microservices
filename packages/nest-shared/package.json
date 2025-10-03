@@ -9,20 +9,24 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "default": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./jwt-auth": {
+      "default": "./dist/jwt-auth/index.js",
       "require": "./dist/jwt-auth/index.js",
       "types": "./dist/jwt-auth/index.d.ts"
     },
     "./keycloak": {
+      "default": "./dist/keycloak/index.js",
       "require": "./dist/keycloak/index.js",
       "types": "./dist/keycloak/index.d.ts"
     },
-    "./contracts/auth": {
-      "require": "./dist/contracts/auth/index.js",
-      "types": "./dist/contracts/auth/index.d.ts"
+    "./contracts": {
+      "default": "./dist/contracts/index.js",
+      "require": "./dist/contracts/index.js",
+      "types": "./dist/contracts/index.d.ts"
     }
   },
   "files": [
@@ -31,7 +35,7 @@
     "README.md"
   ],
   "scripts": {
-    "dev": "tsc --watch",
+    "dev": "tsc -b -v --watch",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -47,7 +51,8 @@
     "jwks-rsa": "^3.2.0",
     "rxjs": "^7.8.1",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.0"
+    "class-validator": "^0.14.0",
+    "@nestjs/mapped-types": "^2.1.0"
   },
   "peerDependencies": {
     "jose": "^5.10.*",

@@ -117,13 +117,13 @@ export class KeycloakService {
 
   async findOneUser(
     args: Parameters<
-      typeof this.keycloakAdminService.adminClient.users.findOne
+      typeof this.keycloakAdminService.adminClient.users.find
     >[0],
   ) {
     try {
-      return this.keycloakAdminService.adminClient.users.findOne(
-        args,
-      ) as Promise<UserRepresentation[]>;
+      return this.keycloakAdminService.adminClient.users
+        .find(args)
+        .then((users) => users[0]);
     } catch (error) {
       this.logger.error('Failed to get user by ID', error);
       throw error;

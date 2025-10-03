@@ -4,7 +4,7 @@ import {
   Headers,
   QueryParams,
 } from '../../services/proxy.service';
-import { UserProfileDto, UserPreferencesDto } from './dto/user.dto';
+import { UserProfileDto, UserPreferencesDto } from 'nest-shared/contracts';
 
 export interface UserProfile extends Record<string, unknown> {
   id: string;

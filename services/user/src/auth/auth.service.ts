@@ -13,7 +13,7 @@ import {
   LoginDto,
   RegisterDto,
   TokenResponse,
-} from 'nest-shared/contracts/auth';
+} from 'nest-shared/contracts';
 
 @Injectable()
 export class AuthService {
@@ -69,7 +69,7 @@ export class AuthService {
       const existingUser = await this.keycloakService.findOneUser({
         username: userData.username,
       });
-      if (!!existingUser.length) {
+      if (!!existingUser) {
         throw new ConflictException('User already exists');
       }
 

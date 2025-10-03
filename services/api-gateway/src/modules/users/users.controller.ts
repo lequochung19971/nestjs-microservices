@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { UserProfileDto, UserPreferencesDto } from './dto/user.dto';
 import { UsersService } from './users.service';
 import { Headers } from '../../services/proxy.service';
 import { UserProfile, UserPreferences } from './users.service';
+import { UserProfileDto, UserPreferencesDto } from 'nest-shared/contracts';
 
 @Controller('users')
 export class UsersController {

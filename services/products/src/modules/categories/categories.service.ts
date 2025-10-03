@@ -1,25 +1,26 @@
 import {
-  Injectable,
   BadRequestException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DrizzleService } from '../../src/db/drizzle.service';
-import { categories, Category } from '../../src/db/schema';
-import { eq, and, isNull, sql, like, asc, desc, count } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNull, like, sql, SQL } from 'drizzle-orm';
 import {
+  CategoryDto,
   CreateCategoryDto,
-  UpdateCategoryDto,
-  QueryCategoryDto,
+  QueryCategoryRequest,
+  QueryCategoryResponse,
   SortField,
   SortOrder,
-} from './dto';
-import { SQL } from 'drizzle-orm';
+  UpdateCategoryDto,
+} from 'nest-shared/contracts';
+import { DrizzleService } from '../../db/drizzle.service';
+import { categories } from '../../db/schema';
 
 @Injectable()
 export class CategoriesService {
   constructor(private readonly drizzle: DrizzleService) {}
 
-  async create(dto: CreateCategoryDto) {
+  async create(dto: CreateCategoryDto): Promise<CategoryDto> {
     // Check if parent exists if parentId is provided
     // if (dto.parentId) {
     //   const parentLevel = await this.getCategoryLevel(dto.parentId);
@@ -56,10 +57,10 @@ export class CategoriesService {
       .returning()
       .execute();
 
-    return newCategory;
+    return new CategoryDto(newCategory);
   }
 
-  async findAll(query?: QueryCategoryDto) {
+  async findAll(query?: QueryCategoryRequest): Promise<QueryCategoryResponse> {
     // Start with a base query
     const baseQuery = this.drizzle.client.select().from(categories);
 
@@ -111,14 +112,17 @@ export class CategoriesService {
 
     // For hierarchical structure, build the tree
     const rootCategories = allCategories.filter((c) => !c.parentId);
-    const categoriesMap = new Map<string, any>();
+    const categoriesMap = new Map<string, CategoryDto>();
 
     // Create a map for quick lookup
     allCategories.forEach((category) => {
-      categoriesMap.set(category.id, {
-        ...category,
-        children: [],
-      });
+      categoriesMap.set(
+        category.id,
+        new CategoryDto({
+          ...category,
+          children: [],
+        }),
+      );
     });
 
     // Build the tree
@@ -126,14 +130,14 @@ export class CategoriesService {
       if (category.parentId) {
         const parent = categoriesMap.get(category.parentId);
         if (parent) {
-          parent.children.push(categoriesMap.get(category.id));
+          parent.children!.push(categoriesMap.get(category.id)!);
         }
       }
     });
 
     // Return only root categories with their children
     return {
-      data: rootCategories.map((c) => categoriesMap.get(c.id)),
+      data: rootCategories.map((c) => categoriesMap.get(c.id)!),
       meta: {
         page: query?.page || 1,
         limit: query?.limit || 10,
@@ -143,7 +147,7 @@ export class CategoriesService {
     };
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<CategoryDto> {
     const [category] = await this.drizzle.client
       .select()
       .from(categories)
@@ -161,13 +165,13 @@ export class CategoriesService {
       .where(eq(categories.parentId, id))
       .execute();
 
-    return {
+    return new CategoryDto({
       ...category,
-      children,
-    };
+      children: children.map((child) => new CategoryDto(child)),
+    });
   }
 
-  async update(id: string, dto: UpdateCategoryDto) {
+  async update(id: string, dto: UpdateCategoryDto): Promise<CategoryDto> {
     // Check if category exists
     const [existingCategory] = await this.drizzle.client
       .select()
@@ -247,10 +251,10 @@ export class CategoriesService {
       .returning()
       .execute();
 
-    return updatedCategory;
+    return new CategoryDto(updatedCategory);
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<CategoryDto> {
     // Check if category exists
     const [existingCategory] = await this.drizzle.client
       .select()
@@ -282,7 +286,7 @@ export class CategoriesService {
       .returning()
       .execute();
 
-    return deletedCategory;
+    return new CategoryDto(deletedCategory);
   }
 
   /**
