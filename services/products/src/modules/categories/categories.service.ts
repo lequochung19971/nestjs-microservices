@@ -34,13 +34,12 @@ export class CategoriesService {
     // }
 
     // Check if slug is unique
-    const existingCategory = await this.drizzle.client
-      .select()
-      .from(categories)
-      .where(eq(categories.slug, dto.slug))
-      .execute();
+    const existingCategory =
+      await this.drizzle.client.query.categories.findFirst({
+        where: eq(categories.slug, dto.slug),
+      });
 
-    if (existingCategory.length > 0) {
+    if (existingCategory) {
       throw new BadRequestException(
         `Category with slug '${dto.slug}' already exists`,
       );

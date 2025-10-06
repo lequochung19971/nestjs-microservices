@@ -12,7 +12,7 @@ import {
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import {
   CategoryDto,
@@ -23,9 +23,9 @@ import {
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
-@ApiTags('Categories')
+@ApiTags('categories')
 @Controller('categories')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
@@ -37,8 +37,9 @@ export class CategoriesController {
     description: 'Category created successfully',
     type: CategoryDto,
   })
-  create(@Body() dto: CreateCategoryDto): Promise<CategoryDto> {
-    return this.categoriesService.create(dto);
+  @ApiBody({ type: CreateCategoryDto })
+  create(@Body() body: CreateCategoryDto): Promise<CategoryDto> {
+    return this.categoriesService.create(body);
   }
 
   @Get()

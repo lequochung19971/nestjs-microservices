@@ -26,6 +26,15 @@ export interface KeycloakClientConfig {
   clientSecret: string;
 }
 
+export interface MinioConfig {
+  endpoint: string;
+  port: number;
+  useSSL: boolean;
+  accessKey: string;
+  secretKey: string;
+  bucketName: string;
+}
+
 export interface AppConfig {
   port: number;
   nodeEnv: string;
@@ -36,6 +45,7 @@ export interface AllConfig {
   keycloak: KeycloakConfig;
   keycloakClient: KeycloakClientConfig;
   app: AppConfig;
+  minio: MinioConfig;
 }
 
 @Injectable()
@@ -91,6 +101,26 @@ export class AppConfigService {
     };
   }
 
+  get minio(): MinioConfig {
+    return {
+      endpoint: this.configService.get<string>('MINIO_ENDPOINT', 'minio'),
+      port: parseInt(this.configService.get<string>('MINIO_PORT', '9000')),
+      useSSL: this.configService.get<string>('MINIO_USE_SSL') === 'true',
+      accessKey: this.configService.get<string>(
+        'MINIO_ACCESS_KEY',
+        'minioadmin',
+      ),
+      secretKey: this.configService.get<string>(
+        'MINIO_SECRET_KEY',
+        'minioadmin',
+      ),
+      bucketName: this.configService.get<string>(
+        'MINIO_BUCKET_NAME',
+        'media-bucket',
+      ),
+    };
+  }
+
   get app(): AppConfig {
     return {
       port: this.configService.get<number>('PORT'),
@@ -104,6 +134,7 @@ export class AppConfigService {
       keycloak: this.keycloak,
       keycloakClient: this.keycloakAdmin,
       app: this.app,
+      minio: this.minio,
     };
   }
 
@@ -144,7 +175,6 @@ export class AppConfigService {
       'KEYCLOAK_SERVER_URL',
       'KEYCLOAK_REALM',
       'KEYCLOAK_RESOURCE',
-      'PORT',
       'NODE_ENV',
     ];
 
@@ -176,6 +206,13 @@ export class AppConfigService {
       ...this.keycloak,
       admin: this.keycloakAdmin,
     };
+  }
+
+  /**
+   * Get Minio storage configuration
+   */
+  getMinioConfig() {
+    return this.minio;
   }
 
   /**

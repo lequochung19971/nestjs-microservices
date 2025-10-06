@@ -53,6 +53,12 @@ export class AppConfigService {
     };
   }
 
+  get mediaService() {
+    return {
+      serviceUrl: process.env.MEDIA_SERVICE_URL,
+    };
+  }
+
   get throttle() {
     return {
       ttl: parseInt(process.env.THROTTLE_TTL || '60', 10),

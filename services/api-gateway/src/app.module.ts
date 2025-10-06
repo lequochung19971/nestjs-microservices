@@ -18,6 +18,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './modules/products';
 import { CategoriesModule } from './modules/categories';
+import { MediaModule } from './modules/media';
 import { ApiClientModule } from './api-clients/api-client.module';
 
 @Module({
@@ -58,6 +59,7 @@ import { ApiClientModule } from './api-clients/api-client.module';
     AuthModule, // Import the Auth module
     ProductsModule,
     CategoriesModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [

@@ -11,8 +11,9 @@ import createClient, {
   FetchResponse,
 } from 'openapi-fetch';
 import { AppConfigService } from 'src/app-config';
-import { paths as usersPaths } from './users-api.generated';
-import { paths as productsPaths } from './products-api.generated';
+import { paths as UsersPaths } from './users-api.generated';
+import { paths as ProductsPaths } from './products-api.generated';
+import { paths as MediaPaths } from './media-api.generated';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 type PathsFor<T> = T extends any ? keyof T & string : never;
@@ -31,26 +32,35 @@ type ClientMethodReturnType<
 export class ApiClientService {
   private readonly logger = new Logger(ApiClientService.name);
 
-  public readonly users: ReturnType<typeof createClient<usersPaths>>;
-  public readonly products: ReturnType<typeof createClient<productsPaths>>;
+  public readonly users: ReturnType<typeof createClient<UsersPaths>>;
+  public readonly products: ReturnType<typeof createClient<ProductsPaths>>;
+  public readonly media: ReturnType<typeof createClient<MediaPaths>>;
 
   constructor(private readonly configService: AppConfigService) {
     // Get service URLs from configuration
     const userServiceUrl = this.configService.userService.serviceUrl;
     const productsServiceUrl = this.configService.productsService.serviceUrl;
+    const mediaServiceUrl = this.configService.mediaService.serviceUrl;
     // Create typed clients
     this.users = this.withCall(
-      createClient<usersPaths>({
+      createClient<UsersPaths>({
         baseUrl: userServiceUrl,
       }),
       'users',
     );
 
     this.products = this.withCall(
-      createClient<productsPaths>({
+      createClient<ProductsPaths>({
         baseUrl: productsServiceUrl,
       }),
       'products',
+    );
+
+    this.media = this.withCall(
+      createClient<MediaPaths>({
+        baseUrl: mediaServiceUrl,
+      }),
+      'media',
     );
   }
 

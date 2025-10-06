@@ -100,20 +100,24 @@ export const productVariants = pgTable(
 
 // Product Images table - Stores additional images for a product
 export const productImages = pgTable(
-  'product_images',
+  'product_media',
   {
     id: uuid('id').primaryKey().defaultRandom(),
     productId: uuid('product_id')
       .notNull()
       .references(() => products.id, { onDelete: 'cascade' }),
-    url: varchar('url', { length: 500 }).notNull(),
-    isPrimary: boolean('is_primary').notNull().default(false),
-    sortOrder: integer('sort_order').notNull().default(0),
+    url: varchar('url', { length: 1000 }).notNull(),
+    mediaId: uuid('media_id').notNull(),
+    originalFilename: varchar('original_filename', { length: 255 }).notNull(),
+    mimeType: varchar('mime_type', { length: 100 }).notNull(),
+    size: integer('size').notNull(),
+    type: varchar('type', { length: 10 }).notNull(),
+    width: integer('width'),
+    height: integer('height'),
   },
   (table) => [
-    index('product_images_product_idx').on(table.productId),
-    index('product_images_primary_idx').on(table.isPrimary),
-    index('product_images_sort_order_idx').on(table.sortOrder),
+    index('product_media_product_idx').on(table.productId),
+    index('product_media_media_idx').on(table.mediaId),
   ],
 );
 

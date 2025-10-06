@@ -1,18 +1,19 @@
 import { Module } from '@nestjs/common';
-import { JwtAuthModule } from 'nest-shared';
 import { AppConfigModule } from './app-config/app-config.module';
-import { AppConfigService } from './app-config/app-config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DrizzleModule } from './db/drizzle.module';
+// import { ServeStaticModule } from '@nestjs/serve-static';
+import { JwtAuthModule } from 'nest-shared';
+import { StorageModule } from '../modules/storage/storage.module';
+import { MediaModule } from '../modules/media/media.module';
+import { AppConfigService } from './app-config';
 import { JwtStrategy } from './strategies/jwt.strategy';
-import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
   imports: [
     AppConfigModule,
     DrizzleModule,
-    CategoriesModule,
     JwtAuthModule.forRootAsync({
       useFactory: (appConfigService: AppConfigService) => {
         return {
@@ -23,6 +24,12 @@ import { CategoriesModule } from './modules/categories/categories.module';
       imports: [AppConfigModule],
       global: true,
     }),
+    // ServeStaticModule.forRoot({
+    //   rootPath: path.join(process.cwd(), 'uploads'),
+    //   serveRoot: '/uploads',
+    // }),
+    StorageModule,
+    MediaModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

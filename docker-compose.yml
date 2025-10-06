@@ -67,7 +67,53 @@ services:
       timeout: 5s
       retries: 5
 
-  # # Keycloak Service
+  # PostgreSQL Database for Media Service
+  postgres-media:
+    image: postgres:15-alpine
+    container_name: microservices-postgres-media-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: media_db
+      POSTGRES_USER: media_user # [service_name]_user
+      POSTGRES_PASSWORD: media_password
+    ports:
+      - '5435:5432'
+    volumes:
+      - postgres_media_data_dev:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-network-dev
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U media_user -d media_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MinIO Object Storage Service
+  minio:
+    image: minio/minio:latest
+    container_name: microservices-minio-dev
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+      MINIO_ADDRESS: ':9000'
+      MINIO_CONSOLE_ADDRESS: ':9001'
+    ports:
+      - '9000:9000' # MinIO API
+      - '9001:9001' # MinIO Console
+    volumes:
+      - minio_data_dev:/data
+    networks:
+      - microservices-network-dev
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  # Keycloak Service
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: microservices-keycloak-dev
@@ -196,9 +242,13 @@ services:
 volumes:
   postgres_user_data_dev:
     driver: local
+  postgres_media_data_dev:
+    driver: local
   postgres_products_data_dev:
     driver: local
   postgres_keycloak_data_dev:
+    driver: local
+  minio_data_dev:
     driver: local
 
 networks:

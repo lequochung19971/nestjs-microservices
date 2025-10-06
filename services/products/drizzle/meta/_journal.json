@@ -8,6 +8,13 @@
       "when": 1756806933443,
       "tag": "0000_init",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759728498850,
+      "tag": "0001_update_product_media",
+      "breakpoints": true
     }
   ]
 }

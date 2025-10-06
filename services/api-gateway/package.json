@@ -18,9 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "openapi": "npm run openapi:generate:user && npm run openapi:generate:products",
+    "openapi": "npm run openapi:generate:user && npm run openapi:generate:products && npm run openapi:generate:media",
     "openapi:user": "openapi-typescript http://localhost:3001/api/docs/json --output src/api-clients/users-api.generated.ts",
-    "openapi:products": "openapi-typescript http://localhost:3002/api/docs/json --output src/api-clients/products-api.generated.ts"
+    "openapi:products": "openapi-typescript http://localhost:3002/api/docs/json --output src/api-clients/products-api.generated.ts",
+    "openapi:media": "openapi-typescript http://localhost:3003/api/docs/json --output src/api-clients/media-api.generated.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
