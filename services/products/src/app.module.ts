@@ -7,12 +7,14 @@ import { AppService } from './app.service';
 import { DrizzleModule } from './db/drizzle.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CategoriesModule } from './modules/categories/categories.module';
+import { ProductsModule } from './modules/products/products.module';
 
 @Module({
   imports: [
     AppConfigModule,
     DrizzleModule,
     CategoriesModule,
+    ProductsModule,
     JwtAuthModule.forRootAsync({
       useFactory: (appConfigService: AppConfigService) => {
         return {

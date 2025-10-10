@@ -9,7 +9,7 @@ import {
   Post,
   Put,
   Query,
-  Request,
+  Req,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -29,6 +29,7 @@ import {
   BatchFileUploadDto,
   DeleteMediaResponseDto,
   FileUploadDto,
+  GetMediaByIdsDto,
   MediaQueryDto,
   MediaResponseDto,
   PaginatedMediaResponseDto,
@@ -36,6 +37,7 @@ import {
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from '../../src/guards/jwt-auth.guard';
 import { MediaService } from './media.service';
+import { Request } from 'express';
 
 @ApiTags('media')
 @Controller('media')
@@ -64,7 +66,7 @@ export class MediaController {
     )
     file: Express.Multer.File,
     @Body() body: { isPublic?: string; path?: string; metadata?: string },
-    @Request() req,
+    @Req() req: Request,
   ) {
     const isPublic = body.isPublic === 'true';
     const path = body.path || '';
@@ -101,7 +103,7 @@ export class MediaController {
     )
     files: Array<Express.Multer.File>,
     @Body() body: { isPublic?: string; path?: string; metadata?: string },
-    @Request() req,
+    @Req() req: Request,
   ) {
     const isPublic = body.isPublic === 'true';
     const path = body.path || '';
@@ -131,7 +133,7 @@ export class MediaController {
     description: 'List of media files',
     type: PaginatedMediaResponseDto,
   })
-  async getAllMedia(@Query() query: MediaQueryDto, @Request() req) {
+  async getAllMedia(@Query() query: MediaQueryDto, @Req() req: Request) {
     // Add owner ID to query for user-specific media
     return this.mediaService.findAll({
       ...query,
@@ -147,7 +149,7 @@ export class MediaController {
     description: 'Media file details',
     type: MediaResponseDto,
   })
-  async getMediaById(@Param('id') id: string, @Request() req) {
+  async getMediaById(@Param('id') id: string, @Req() req: Request) {
     const media = await this.mediaService.findOne(id);
 
     // Check if media is public or belongs to the requesting user
@@ -172,7 +174,7 @@ export class MediaController {
   async updateMedia(
     @Param('id') id: string,
     @Body() updateData: UpdateMediaDto,
-    @Request() req,
+    @Req() req: Request,
   ) {
     return this.mediaService.update(id, updateData, req.user.sub);
   }
@@ -187,7 +189,18 @@ export class MediaController {
     description: 'Media deleted successfully',
     type: DeleteMediaResponseDto,
   })
-  async deleteMedia(@Param('id') id: string, @Request() req) {
+  async deleteMedia(@Param('id') id: string, @Req() req: Request) {
     return this.mediaService.delete(id, req.user.sub);
+  }
+
+  @Get('ids')
+  @ApiOperation({ summary: 'Get media by IDs' })
+  @ApiResponse({
+    status: 200,
+    description: 'Media by IDs',
+    type: [MediaResponseDto],
+  })
+  async getMediaByIds(@Body() body: GetMediaByIdsDto) {
+    return this.mediaService.findByIds(body.ids);
   }
 }

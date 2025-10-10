@@ -4,7 +4,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { and, eq, like, sql, SQL } from 'drizzle-orm';
+import { and, eq, inArray, like, sql, SQL } from 'drizzle-orm';
 import { DrizzleService } from '../../src/db/drizzle.service';
 import { Media, media, MediaType } from '../../src/db/schema';
 import { StorageService } from '../storage/storage.service';
@@ -148,6 +148,16 @@ export class MediaService {
       );
       throw new BadRequestException(`Failed to get media: ${error.message}`);
     }
+  }
+
+  /**
+   * Get media by IDs
+   */
+  async findByIds(ids: string[]): Promise<Media[]> {
+    const mediaItems = await this.db.client.query.media.findMany({
+      where: inArray(media.id, ids),
+    });
+    return mediaItems;
   }
 
   /**

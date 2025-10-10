@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ApiClientService } from '../../api-clients/api-client';
+import { Request } from 'express';
+import { ApiClientService } from 'nest-shared/api-clients/api-client.service';
 import {
   BatchFileUploadDto,
   FileUploadDto,
@@ -68,7 +69,7 @@ export class MediaService {
     return response.data;
   }
 
-  async getMediaById(id: string, headers: Record<string, any> = {}) {
+  async getMediaById(id: string, headers: Request['headers']) {
     const response = await this.apiClient.media.GET('/media/{id}', {
       params: { path: { id } },
       headers,
@@ -79,7 +80,7 @@ export class MediaService {
   async updateMedia(
     id: string,
     data: UpdateMediaDto,
-    headers: Record<string, any> = {},
+    headers: Request['headers'],
   ) {
     const response = await this.apiClient.media.PUT('/media/{id}', {
       params: { path: { id } },
@@ -89,7 +90,7 @@ export class MediaService {
     return response.data;
   }
 
-  async deleteMedia(id: string, headers: Record<string, any> = {}) {
+  async deleteMedia(id: string, headers: Request['headers']) {
     const response = await this.apiClient.media.DELETE('/media/{id}', {
       params: { path: { id } },
       headers,
@@ -98,10 +99,7 @@ export class MediaService {
   }
 
   // Folder operations
-  async getFolders(
-    query: FolderQueryDto = {},
-    headers: Record<string, any> = {},
-  ) {
+  async getFolders(query: FolderQueryDto = {}, headers: Request['headers']) {
     const response = await this.apiClient.media.GET('/media/folders', {
       params: { query },
       headers,
@@ -109,7 +107,7 @@ export class MediaService {
     return response.data;
   }
 
-  async createFolder(data: CreateFolderDto, headers: Record<string, any> = {}) {
+  async createFolder(data: CreateFolderDto, headers: Request['headers']) {
     const response = await this.apiClient.media.POST('/media/folders', {
       body: data,
       headers,
@@ -117,7 +115,7 @@ export class MediaService {
     return response.data;
   }
 
-  async getFolderById(id: string, headers: Record<string, any> = {}) {
+  async getFolderById(id: string, headers: Request['headers']) {
     const response = await this.apiClient.media.GET('/media/folders/{id}', {
       params: { path: { id } },
       headers,
@@ -125,7 +123,7 @@ export class MediaService {
     return response.data;
   }
 
-  async getMediaInFolder(id: string, headers: Record<string, any> = {}) {
+  async getMediaInFolder(id: string, headers: Request['headers']) {
     const response = await this.apiClient.media.GET(
       '/media/folders/{id}/media',
       {
@@ -139,7 +137,7 @@ export class MediaService {
   async updateFolder(
     id: string,
     data: UpdateFolderDto,
-    headers: Record<string, any> = {},
+    headers: Request['headers'],
   ) {
     const response = await this.apiClient.media.PUT('/media/folders/{id}', {
       params: { path: { id } },
@@ -152,7 +150,7 @@ export class MediaService {
   async deleteFolder(
     id: string,
     deleteContents: boolean = false,
-    headers: Record<string, any> = {},
+    headers: Request['headers'],
   ) {
     const response = await this.apiClient.media.DELETE('/media/folders/{id}', {
       params: {
@@ -166,7 +164,7 @@ export class MediaService {
 
   async moveMediaToFolder(
     data: MoveMediaToFolderDto,
-    headers: Record<string, any> = {},
+    headers: Request['headers'],
   ) {
     const response = await this.apiClient.media.POST('/media/folders/move', {
       body: data,
@@ -176,7 +174,7 @@ export class MediaService {
   }
 
   // Tag operations
-  async getTags(query: TagQueryDto = {}, headers: Record<string, any> = {}) {
+  async getTags(query: TagQueryDto = {}, headers: Request['headers']) {
     const response = await this.apiClient.media.GET('/media/tags', {
       params: { query },
       headers,
@@ -184,7 +182,7 @@ export class MediaService {
     return response.data;
   }
 
-  async createTag(data: CreateTagDto, headers: Record<string, any> = {}) {
+  async createTag(data: CreateTagDto, headers: Request['headers']) {
     const response = await this.apiClient.media.POST('/media/tags', {
       body: data,
       headers,
@@ -192,7 +190,7 @@ export class MediaService {
     return response.data;
   }
 
-  async getTagById(id: string, headers: Record<string, any> = {}) {
+  async getTagById(id: string, headers: Request['headers']) {
     const response = await this.apiClient.media.GET('/media/tags/{id}', {
       params: { path: { id } },
       headers,

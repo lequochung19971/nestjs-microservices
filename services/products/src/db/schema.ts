@@ -34,7 +34,6 @@ export const products = pgTable(
     description: text('description'),
     price: decimal('price', { precision: 10, scale: 2 }).notNull(),
     currency: currencyEnum('currency').notNull().default('USD'),
-    imageUrl: varchar('image_url', { length: 500 }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     isActive: boolean('is_active').notNull().default(true),
@@ -112,8 +111,6 @@ export const productImages = pgTable(
     mimeType: varchar('mime_type', { length: 100 }).notNull(),
     size: integer('size').notNull(),
     type: varchar('type', { length: 10 }).notNull(),
-    width: integer('width'),
-    height: integer('height'),
   },
   (table) => [
     index('product_media_product_idx').on(table.productId),

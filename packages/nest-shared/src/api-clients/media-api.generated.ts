@@ -122,6 +122,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/media/ids": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get media by IDs */
+        get: operations["MediaController_getMediaByIds"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/media/folders": {
         parameters: {
             query?: never;
@@ -456,6 +473,10 @@ export interface components {
             /** @description Whether the deletion was successful */
             success: boolean;
         };
+        GetMediaByIdsDto: {
+            /** @description Media IDs */
+            ids: string[];
+        };
         CreateFolderDto: {
             /** @description Name of the folder */
             name: string;
@@ -591,6 +612,12 @@ export interface components {
             success: boolean;
             /** @description Number of affected items */
             count?: number;
+        };
+        RemoveTagsFromMediaDto: {
+            /** @description List of media IDs to remove tags from */
+            mediaIds: string[];
+            /** @description List of tag IDs to remove */
+            tagIds: string[];
         };
     };
     responses: never;
@@ -804,6 +831,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DeleteMediaResponseDto"];
+                };
+            };
+        };
+    };
+    MediaController_getMediaByIds: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GetMediaByIdsDto"];
+            };
+        };
+        responses: {
+            /** @description Media by IDs */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaResponseDto"][];
                 };
             };
         };
@@ -1189,7 +1240,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["AddTagsToMediaDto"];
+                "application/json": components["schemas"]["RemoveTagsFromMediaDto"];
             };
         };
         responses: {

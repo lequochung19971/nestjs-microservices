@@ -9,7 +9,7 @@ import {
   Post,
   Put,
   Query,
-  Request,
+  Req,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -25,6 +25,7 @@ import {
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { MediaService } from './media.service';
+import { Request } from 'express';
 
 @Controller('media')
 export class MediaController {
@@ -38,7 +39,7 @@ export class MediaController {
   async uploadFile(
     @UploadedFile() file: MulterFile,
     @Body() body: FileUploadDto,
-    @Request() req,
+    @Req() req: Request,
   ) {
     this.logger.log(`Uploading file: ${file.originalname}`);
     return this.mediaService.uploadFile(file, body, req.headers);
@@ -50,7 +51,7 @@ export class MediaController {
   async uploadFiles(
     @UploadedFiles() files: any[],
     @Body() body: BatchFileUploadDto,
-    @Request() req,
+    @Req() req: Request,
   ) {
     this.logger.log(`Uploading ${files.length} files`);
     return this.mediaService.uploadFiles(files, body, req.headers);
@@ -58,14 +59,17 @@ export class MediaController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async getAllMedia(@Query() query: MediaQueryDto, @Request() req) {
+  async getAllMedia(@Query() query: MediaQueryDto, @Req() req: Request) {
     this.logger.log('Getting all media files');
     return this.mediaService.getAllMedia(query, req.headers);
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  async getMediaById(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
+  async getMediaById(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ) {
     this.logger.log(`Getting media with id: ${id}`);
     return this.mediaService.getMediaById(id, req.headers);
   }
@@ -75,7 +79,7 @@ export class MediaController {
   async updateMedia(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateMediaDto,
-    @Request() req,
+    @Req() req: Request,
   ) {
     this.logger.log(`Updating media with id: ${id}`);
     return this.mediaService.updateMedia(id, updateData, req.headers);
@@ -83,7 +87,10 @@ export class MediaController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteMedia(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
+  async deleteMedia(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ) {
     this.logger.log(`Deleting media with id: ${id}`);
     return this.mediaService.deleteMedia(id, req.headers);
   }

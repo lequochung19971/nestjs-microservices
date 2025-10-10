@@ -7,10 +7,12 @@ import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
+  IsArray,
+  IsString,
+  IsNotEmpty,
   IsNumber,
   IsObject,
   IsOptional,
-  IsString,
   IsUUID,
   Max,
   Min,
@@ -354,6 +356,15 @@ export class DeleteMediaResponseDto {
 
   @ApiProperty({ description: 'Whether the deletion was successful' })
   success: boolean;
+}
+
+export class GetMediaByIdsDto {
+  @ApiProperty({ description: 'Media IDs' })
+  @IsUUID('4', { each: true })
+  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  ids: string[];
 }
 
 export type MulterFile = Express.Multer.File;

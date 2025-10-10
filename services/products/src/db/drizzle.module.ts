@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import db from '.';
+import { DrizzleService } from './drizzle.service';
 
 export const DRIZZLE_PROVIDER = 'DRIZZLE_PROVIDER';
 

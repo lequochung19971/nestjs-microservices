@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ApiClientModule } from 'src/api-clients/api-client.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { ApiClientService } from 'nest-shared/api-clients/api-client.service';
 
 @Module({
-  imports: [ApiClientModule],
+  imports: [],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, ApiClientService],
   exports: [AuthService],
 })
 export class AuthModule {}

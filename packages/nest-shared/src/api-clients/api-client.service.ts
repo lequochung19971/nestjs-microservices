@@ -1,28 +1,26 @@
 import {
-  Injectable,
-  Scope,
   HttpException,
+  Injectable,
   InternalServerErrorException,
   Logger,
+  Scope,
 } from '@nestjs/common';
-import createClient, {
-  Client,
-  FetchOptions,
-  FetchResponse,
-} from 'openapi-fetch';
-import { AppConfigService } from 'src/app-config';
-import { paths as UsersPaths } from './users-api.generated';
-import { paths as ProductsPaths } from './products-api.generated';
 import { paths as MediaPaths } from './media-api.generated';
+import { paths as ProductsPaths } from './products-api.generated';
+import { paths as UsersPaths } from './users-api.generated';
+import createClient, { Client, FetchResponse } from 'openapi-fetch';
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-type PathsFor<T> = T extends any ? keyof T & string : never;
-
-// Extract the return type from the client methods
-type ClientMethodReturnType<
-  TClient extends ReturnType<typeof createClient<any>>,
-  TMethod extends HttpMethod,
-> = TClient[TMethod] extends (...args: any[]) => infer R ? R : never;
+const serviceConfigs = {
+  users: {
+    url: 'http://localhost:3001',
+  },
+  products: {
+    url: 'http://localhost:3002',
+  },
+  media: {
+    url: 'http://localhost:3003',
+  },
+};
 
 /**
  * Injectable service that provides typed API clients for all microservices.
@@ -36,11 +34,11 @@ export class ApiClientService {
   public readonly products: ReturnType<typeof createClient<ProductsPaths>>;
   public readonly media: ReturnType<typeof createClient<MediaPaths>>;
 
-  constructor(private readonly configService: AppConfigService) {
+  constructor() {
     // Get service URLs from configuration
-    const userServiceUrl = this.configService.userService.serviceUrl;
-    const productsServiceUrl = this.configService.productsService.serviceUrl;
-    const mediaServiceUrl = this.configService.mediaService.serviceUrl;
+    const userServiceUrl = serviceConfigs.users.url;
+    const productsServiceUrl = serviceConfigs.products.url;
+    const mediaServiceUrl = serviceConfigs.media.url;
     // Create typed clients
     this.users = this.withCall(
       createClient<UsersPaths>({

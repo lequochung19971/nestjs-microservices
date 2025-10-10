@@ -13,13 +13,11 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { ErrorMiddleware } from './middleware/error.middleware';
 import { LoggerMiddleware } from './middleware/logger.middleware';
-import { ProxyService } from './services/proxy.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './modules/products';
 import { CategoriesModule } from './modules/categories';
 import { MediaModule } from './modules/media';
-import { ApiClientModule } from './api-clients/api-client.module';
 
 @Module({
   imports: [
@@ -55,7 +53,6 @@ import { ApiClientModule } from './api-clients/api-client.module';
       imports: [AppConfigModule],
       global: true,
     }),
-    ApiClientModule,
     AuthModule, // Import the Auth module
     ProductsModule,
     CategoriesModule,
@@ -64,7 +61,6 @@ import { ApiClientModule } from './api-clients/api-client.module';
   controllers: [AppController],
   providers: [
     AppService,
-    ProxyService,
     JwtStrategy,
     {
       provide: APP_GUARD,

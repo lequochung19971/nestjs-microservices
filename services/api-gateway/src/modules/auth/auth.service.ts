@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ApiClientService } from 'src/api-clients/api-client';
 import {
   LoginDto,
   RegisterDto,
@@ -8,6 +7,7 @@ import {
   CodeExchangeDto,
   LogoutDto,
 } from 'nest-shared/contracts';
+import { ApiClientService } from 'nest-shared/api-clients/api-client.service';
 
 /**
  * Service responsible for authentication operations

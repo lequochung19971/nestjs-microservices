@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AppService } from './app.service';
-import { ProxyService } from './services/proxy.service';
 import { Public } from './decorators/public.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
@@ -20,10 +19,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 export class AppController {
   private readonly logger = new Logger(AppController.name);
 
-  constructor(
-    private readonly appService: AppService,
-    private readonly proxyService: ProxyService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Public()
   @Get()

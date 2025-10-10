@@ -30,10 +30,6 @@ export function setupSwagger(
       },
       'access-token',
     )
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User profile management endpoints')
-    .addTag('admin', 'Admin-only endpoints')
-    .addTag('products', 'Product management endpoints')
     .build();
 
   // Create Swagger document

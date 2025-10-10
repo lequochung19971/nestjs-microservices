@@ -3,12 +3,12 @@ import { MediaController } from './media.controller';
 import { FolderController } from './folder.controller';
 import { TagController } from './tag.controller';
 import { MediaService } from './media.service';
-import { ApiClientModule } from '../../api-clients/api-client.module';
+import { ApiClientService } from 'nest-shared/api-clients/api-client.service';
 
 @Module({
-  imports: [ApiClientModule],
+  imports: [],
   controllers: [MediaController, FolderController, TagController],
-  providers: [MediaService],
+  providers: [MediaService, ApiClientService],
   exports: [MediaService],
 })
 export class MediaModule {}
