@@ -74,8 +74,6 @@ export class CategoriesService {
     // Add parent ID condition if provided
     if (query?.parentId) {
       conditions.push(eq(categories.parentId, query.parentId));
-    } else if (query?.parentId === '') {
-      conditions.push(isNull(categories.parentId));
     }
 
     if (conditions.length > 0) {
@@ -136,7 +134,7 @@ export class CategoriesService {
 
     // Return only root categories with their children
     return {
-      data: rootCategories.map((c) => categoriesMap.get(c.id)!),
+      data: allCategories,
       meta: {
         page: query?.page || 1,
         limit: query?.limit || 10,

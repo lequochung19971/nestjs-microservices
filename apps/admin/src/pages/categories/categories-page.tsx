@@ -1,7 +1,30 @@
-import { FolderTree, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from 'react';
+import { CategoriesTable } from '@/components/categories/categories-table';
+import { CreateCategoryDialog } from '@/components/categories/create-category-dialog';
+import { EditCategoryDialog } from '@/components/categories/edit-category-dialog';
+import type { ApiSchema } from '@/http-clients';
+
+type CategoryDto = ApiSchema['CategoryDto'];
 
 export function CategoriesPage() {
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [categoryToEdit, setCategoryToEdit] = useState<CategoryDto | null>(null);
+
+  const handleCreateCategory = () => {
+    setCreateDialogOpen(true);
+  };
+
+  const handleEditCategory = (category: CategoryDto) => {
+    setCategoryToEdit(category);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+    setCategoryToEdit(null);
+  };
+
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -9,25 +32,20 @@ export function CategoriesPage() {
           <h2 className="text-2xl font-bold tracking-tight">Categories</h2>
           <p className="text-muted-foreground">Organize your products with categories</p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Category
-        </Button>
       </div>
 
-      <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <FolderTree className="h-12 w-12 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">No categories found</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Create categories to organize your products and make them easier to find.
-          </p>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Category
-          </Button>
-        </div>
-      </div>
+      <CategoriesTable
+        onCreateCategory={handleCreateCategory}
+        onEditCategory={handleEditCategory}
+      />
+
+      <CreateCategoryDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+
+      <EditCategoryDialog
+        category={categoryToEdit}
+        open={editDialogOpen}
+        onOpenChange={handleEditDialogClose}
+      />
     </div>
   );
 }

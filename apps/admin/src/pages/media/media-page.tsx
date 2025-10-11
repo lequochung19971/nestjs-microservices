@@ -10,7 +10,7 @@ export function MediaPage() {
           <p className="text-muted-foreground">Manage your images, videos, and documents</p>
         </div>
         <Button>
-          <Upload className="mr-2 h-4 w-4" />
+          <Upload className="h-4 w-4" />
           Upload Media
         </Button>
       </div>
@@ -23,7 +23,7 @@ export function MediaPage() {
             Upload images, videos, and documents to use in your products and content.
           </p>
           <Button>
-            <Upload className="mr-2 h-4 w-4" />
+            <Upload className="h-4 w-4" />
             Upload Media
           </Button>
         </div>

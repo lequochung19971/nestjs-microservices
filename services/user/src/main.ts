@@ -23,11 +23,6 @@ async function bootstrap() {
     .setTitle('User Service API')
     .setDescription('The User service API documentation')
     .setVersion('1.0')
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('users', 'User management endpoints')
-    .addTag('profile', 'User profile endpoints')
-    .addTag('preferences', 'User preferences endpoints')
-    .addTag('admin', 'Admin-only endpoints')
     .addBearerAuth(
       {
         type: 'http',

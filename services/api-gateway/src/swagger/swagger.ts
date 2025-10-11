@@ -36,5 +36,7 @@ export function setupSwagger(
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
   // Set up Swagger UI route
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup('api/docs', app, document, {
+    jsonDocumentUrl: 'api/docs/json',
+  });
 }

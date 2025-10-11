@@ -10,7 +10,7 @@ export function ProductsPage() {
           <p className="text-muted-foreground">Manage your product catalog</p>
         </div>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Add Product
         </Button>
       </div>
@@ -23,7 +23,7 @@ export function ProductsPage() {
             You haven't added any products yet. Start by creating your first product.
           </p>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             Add Product
           </Button>
         </div>

@@ -10,7 +10,7 @@ export function UsersPage() {
           <p className="text-muted-foreground">Manage customer accounts and administrators</p>
         </div>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Add User
         </Button>
       </div>
@@ -23,7 +23,7 @@ export function UsersPage() {
             Manage customer accounts, administrators, and user permissions.
           </p>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             Add User
           </Button>
         </div>

@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/": {
+    "/api": {
         parameters: {
             query?: never;
             header?: never;
@@ -20,7 +20,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/health": {
+    "/api/health": {
         parameters: {
             query?: never;
             header?: never;
@@ -36,7 +36,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/protected": {
+    "/api/protected": {
         parameters: {
             query?: never;
             header?: never;
@@ -52,7 +52,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/register": {
+    "/api/auth/register": {
         parameters: {
             query?: never;
             header?: never;
@@ -69,7 +69,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/login": {
+    "/api/auth/login": {
         parameters: {
             query?: never;
             header?: never;
@@ -86,7 +86,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/exchange-code": {
+    "/api/auth/exchange-code": {
         parameters: {
             query?: never;
             header?: never;
@@ -103,7 +103,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/refresh": {
+    "/api/auth/refresh": {
         parameters: {
             query?: never;
             header?: never;
@@ -120,7 +120,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/logout": {
+    "/api/auth/logout": {
         parameters: {
             query?: never;
             header?: never;
@@ -137,7 +137,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/auth/introspect": {
+    "/api/auth/introspect": {
         parameters: {
             query?: never;
             header?: never;
@@ -154,7 +154,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products": {
+    "/api/products": {
         parameters: {
             query?: never;
             header?: never;
@@ -172,7 +172,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/search": {
+    "/api/products/search": {
         parameters: {
             query?: never;
             header?: never;
@@ -189,7 +189,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/sku/{sku}": {
+    "/api/products/sku/{sku}": {
         parameters: {
             query?: never;
             header?: never;
@@ -206,7 +206,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/category/{categoryId}": {
+    "/api/products/category/{categoryId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -223,7 +223,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}": {
+    "/api/products/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -242,7 +242,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}/variants": {
+    "/api/products/{id}/variants": {
         parameters: {
             query?: never;
             header?: never;
@@ -260,7 +260,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}/variants/{variantId}": {
+    "/api/products/{id}/variants/{variantId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -278,7 +278,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}/media": {
+    "/api/products/{id}/media": {
         parameters: {
             query?: never;
             header?: never;
@@ -296,7 +296,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}/media/{mediaId}": {
+    "/api/products/{id}/media/{mediaId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -313,7 +313,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/products/{id}/media/{mediaId}/primary": {
+    "/api/products/{id}/media/{mediaId}/primary": {
         parameters: {
             query?: never;
             header?: never;
@@ -330,15 +330,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/categories": {
+    "/api/categories": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        /** Find all categories */
         get: operations["CategoriesController_findAll"];
         put?: never;
+        /** Create a category */
         post: operations["CategoriesController_create"];
         delete?: never;
         options?: never;
@@ -346,23 +348,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/categories/{id}": {
+    "/api/categories/{id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
+        /** Find a category by ID */
         get: operations["CategoriesController_findOne"];
         put?: never;
         post?: never;
+        /** Remove a category */
         delete: operations["CategoriesController_remove"];
         options?: never;
         head?: never;
+        /** Update a category */
         patch: operations["CategoriesController_update"];
         trace?: never;
     };
-    "/media/upload": {
+    "/api/media/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -378,7 +383,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/upload/batch": {
+    "/api/media/upload/batch": {
         parameters: {
             query?: never;
             header?: never;
@@ -394,7 +399,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media": {
+    "/api/media": {
         parameters: {
             query?: never;
             header?: never;
@@ -410,7 +415,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/{id}": {
+    "/api/media/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -426,7 +431,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/folders": {
+    "/api/media/folders": {
         parameters: {
             query?: never;
             header?: never;
@@ -442,7 +447,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/folders/{id}": {
+    "/api/media/folders/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -458,7 +463,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/folders/{id}/media": {
+    "/api/media/folders/{id}/media": {
         parameters: {
             query?: never;
             header?: never;
@@ -474,7 +479,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/folders/move": {
+    "/api/media/folders/move": {
         parameters: {
             query?: never;
             header?: never;
@@ -490,7 +495,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/tags": {
+    "/api/media/tags": {
         parameters: {
             query?: never;
             header?: never;
@@ -506,7 +511,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/tags/{id}": {
+    "/api/media/tags/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -522,7 +527,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/tags/{id}/media": {
+    "/api/media/tags/{id}/media": {
         parameters: {
             query?: never;
             header?: never;
@@ -538,7 +543,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/tags/media/{mediaId}": {
+    "/api/media/tags/media/{mediaId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -554,7 +559,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/tags/add-to-media": {
+    "/api/media/tags/add-to-media": {
         parameters: {
             query?: never;
             header?: never;
@@ -570,7 +575,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/tags/remove-from-media": {
+    "/api/media/tags/remove-from-media": {
         parameters: {
             query?: never;
             header?: never;
@@ -1111,6 +1116,34 @@ export interface components {
              * @example 123e4567-e89b-12d3-a456-426614174000
              */
             parentId: string;
+        };
+        PaginationMeta: {
+            /**
+             * @description Current page number
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Number of items per page
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Total number of items
+             * @example 100
+             */
+            totalCount: number;
+            /**
+             * @description Total number of pages
+             * @example 10
+             */
+            totalPages: number;
+        };
+        QueryCategoryResponse: {
+            /** @description List of items */
+            data: components["schemas"]["CategoryDto"][];
+            /** @description Pagination metadata */
+            meta: components["schemas"]["PaginationMeta"];
         };
         UpdateCategoryDto: {
             /**
@@ -1969,7 +2002,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["QueryCategoryResponse"];
+                };
             };
         };
     };
@@ -1986,11 +2021,13 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -2005,11 +2042,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            200: {
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -2024,11 +2063,13 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            204: {
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };
@@ -2047,11 +2088,13 @@ export interface operations {
             };
         };
         responses: {
-            200: {
+            default: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["CategoryDto"];
+                };
             };
         };
     };

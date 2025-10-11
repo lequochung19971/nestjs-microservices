@@ -55,6 +55,9 @@ export const categories = pgTable(
       onDelete: 'set null',
     }),
     slug: varchar('slug', { length: 255 }).notNull().unique(),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    isActive: boolean('is_active').notNull().default(true),
   },
   (table) => [
     index('slug_idx').on(table.slug),

@@ -10,7 +10,7 @@ export function OrdersPage() {
           <p className="text-muted-foreground">Manage customer orders and fulfillment</p>
         </div>
         <Button>
-          <Plus className="mr-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           Create Order
         </Button>
       </div>
@@ -23,7 +23,7 @@ export function OrdersPage() {
             Customer orders will appear here. You can also create orders manually.
           </p>
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             Create Order
           </Button>
         </div>

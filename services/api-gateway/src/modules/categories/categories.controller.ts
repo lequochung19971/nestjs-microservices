@@ -20,8 +20,11 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
   QueryCategoryRequest,
+  QueryCategoryResponse,
+  CategoryDto,
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 
 @Controller('categories')
 @UseGuards(JwtAuthGuard)
@@ -32,13 +35,32 @@ export class CategoriesController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateCategoryDto, @Req() req: Request) {
+  @ApiOperation({ summary: 'Create a category' })
+  @ApiResponse({
+    status: 201,
+    description: 'Category created successfully',
+    type: CategoryDto,
+  })
+  async create(
+    @Body() dto: CreateCategoryDto,
+    @Req() req: Request,
+  ): Promise<CategoryDto> {
     this.logger.log(`Creating category: ${dto.name}`);
     return this.categoriesService.create(dto, req.headers);
   }
 
   @Get()
-  async findAll(@Query() query: QueryCategoryRequest, @Req() req: Request) {
+  @ApiQuery({ type: QueryCategoryRequest })
+  @ApiResponse({
+    status: 200,
+    description: 'Categories found successfully',
+    type: QueryCategoryResponse,
+  })
+  @ApiOperation({ summary: 'Find all categories' })
+  async findAll(
+    @Query() query: QueryCategoryRequest,
+    @Req() req: Request,
+  ): Promise<QueryCategoryResponse> {
     this.logger.log(
       `Finding all categories with query: ${JSON.stringify(query)}`,
     );
@@ -46,24 +68,48 @@ export class CategoriesController {
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
+  @ApiOperation({ summary: 'Find a category by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category found successfully',
+    type: CategoryDto,
+  })
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ): Promise<CategoryDto> {
     this.logger.log(`Finding category with id: ${id}`);
     return this.categoriesService.findOne(id, req.headers);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a category' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category updated successfully',
+    type: CategoryDto,
+  })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateCategoryDto,
     @Req() req: Request,
-  ) {
+  ): Promise<CategoryDto> {
     this.logger.log(`Updating category with id: ${id}`);
     return this.categoriesService.update(id, dto, req.headers);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request) {
+  @ApiOperation({ summary: 'Remove a category' })
+  @ApiResponse({
+    status: 200,
+    description: 'Category removed successfully',
+    type: CategoryDto,
+  })
+  async remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Req() req: Request,
+  ): Promise<CategoryDto> {
     this.logger.log(`Removing category with id: ${id}`);
     return this.categoriesService.remove(id, req.headers);
   }

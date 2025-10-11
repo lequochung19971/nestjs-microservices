@@ -16,8 +16,8 @@ export class CreateCategoryDto {
   })
   slug: string;
 
-  @IsOptional()
   @IsUUID()
+  @IsOptional()
   @ApiProperty({
     description: 'Parent category ID',
     example: '123e4567-e89b-12d3-a456-426614174000',

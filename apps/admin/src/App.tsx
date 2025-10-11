@@ -1,4 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './contexts/auth-context';
+import { QueryProvider } from './providers/query-provider';
+import { ProtectedRoute } from './components/auth/protected-route';
+import { LoginPage } from './pages/auth/login-page';
 import { AppLayout } from './components/layout/app-layout';
 import { DashboardPage } from './pages/dashboard/dashboard-page';
 import { ProductsPage } from './pages/products/products-page';
@@ -9,19 +13,33 @@ import { UsersPage } from './pages/users/users-page';
 
 function App() {
   return (
-    <Router>
-      <AppLayout>
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/categories" element={<CategoriesPage />} />
-          <Route path="/media" element={<MediaPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AppLayout>
-    </Router>
+    <QueryProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/*"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Routes>
+                      <Route path="/" element={<DashboardPage />} />
+                      <Route path="/products" element={<ProductsPage />} />
+                      <Route path="/categories" element={<CategoriesPage />} />
+                      <Route path="/media" element={<MediaPage />} />
+                      <Route path="/orders" element={<OrdersPage />} />
+                      <Route path="/users" element={<UsersPage />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </QueryProvider>
   );
 }
 
