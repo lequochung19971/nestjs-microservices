@@ -27,9 +27,13 @@ export function setupSwagger(
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Enter JWT token. Example: <token_value>',
+        in: 'header',
       },
-      'access-token',
+      'access-token', // This identifier will be used in @ApiBearerAuth('access-token')
     )
+    .addSecurityRequirements('access-token') // Apply bearer auth to all endpoints by default
     .build();
 
   // Create Swagger document
@@ -38,5 +42,12 @@ export function setupSwagger(
   // Set up Swagger UI route
   SwaggerModule.setup('api/docs', app, document, {
     jsonDocumentUrl: 'api/docs/json',
+    swaggerOptions: {
+      persistAuthorization: true, // Keep authorization when refreshing the page
+      displayRequestDuration: true,
+      filter: true,
+      showExtensions: true,
+      showCommonExtensions: true,
+    },
   });
 }

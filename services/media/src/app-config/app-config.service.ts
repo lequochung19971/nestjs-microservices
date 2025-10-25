@@ -35,6 +35,14 @@ export interface MinioConfig {
   bucketName: string;
 }
 
+export interface RabbitMQConfig {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  vhost: string;
+}
+
 export interface AppConfig {
   port: number;
   nodeEnv: string;
@@ -46,6 +54,7 @@ export interface AllConfig {
   keycloakClient: KeycloakClientConfig;
   app: AppConfig;
   minio: MinioConfig;
+  rabbitmq: RabbitMQConfig;
 }
 
 @Injectable()
@@ -128,6 +137,19 @@ export class AppConfigService {
     };
   }
 
+  get rabbitmq(): RabbitMQConfig {
+    return {
+      host: this.configService.get<string>('RABBITMQ_HOST', 'localhost'),
+      port: this.configService.get<number>('RABBITMQ_PORT', 5672),
+      user: this.configService.get<string>('RABBITMQ_USER', 'rabbitmq_user'),
+      password: this.configService.get<string>(
+        'RABBITMQ_PASSWORD',
+        'rabbitmq_password',
+      ),
+      vhost: this.configService.get<string>('RABBITMQ_VHOST', '/'),
+    };
+  }
+
   get all(): AllConfig {
     return {
       database: this.database,
@@ -135,6 +157,7 @@ export class AppConfigService {
       keycloakClient: this.keycloakAdmin,
       app: this.app,
       minio: this.minio,
+      rabbitmq: this.rabbitmq,
     };
   }
 
@@ -176,6 +199,11 @@ export class AppConfigService {
       'KEYCLOAK_REALM',
       'KEYCLOAK_RESOURCE',
       'NODE_ENV',
+      'RABBITMQ_HOST',
+      'RABBITMQ_PORT',
+      'RABBITMQ_USER',
+      'RABBITMQ_PASSWORD',
+      'RABBITMQ_VHOST',
     ];
 
     const missingConfigs = requiredConfigs.filter(

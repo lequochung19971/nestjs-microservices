@@ -1,11 +1,17 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   Logger,
   NotFoundException,
+  OnModuleInit,
+  Scope,
 } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { and, desc, eq, ilike, or, sql } from 'drizzle-orm';
+import { Request } from 'express';
+import { ApiClientService } from 'nest-shared/api-clients/api-client.service';
 import {
   AttachMediaToProductDto,
   CreateProductDto,
@@ -17,8 +23,10 @@ import {
   QueryProductRequest,
   QueryProductResponse,
   UpdateProductDto,
+  UpdateProductMediaDto,
   UpdateProductVariantDto,
 } from 'nest-shared/contracts';
+import { headersForwarding } from 'nest-shared/utils';
 import { DrizzleService } from '../../db/drizzle.service';
 import {
   categories,
@@ -28,16 +36,19 @@ import {
   products,
   productVariants,
 } from '../../db/schema';
-import { ApiClientService } from 'nest-shared/api-clients/api-client.service';
 
 @Injectable()
-export class ProductsService {
+export class ProductsService implements OnModuleInit {
   private readonly logger = new Logger(ProductsService.name);
 
   constructor(
     private readonly drizzle: DrizzleService,
     private readonly apiClientService: ApiClientService,
   ) {}
+
+  async onModuleInit() {
+    console.log('TEST');
+  }
 
   // Core CRUD Operations
 
@@ -93,11 +104,17 @@ export class ProductsService {
           await tx.insert(productVariants).values(variantData);
         }
         if (dto.imageIds?.length) {
-          const images = await this.apiClientService.media.GET('/media/ids', {
-            body: {
-              ids: dto.imageIds,
+          const images = await this.apiClientService.media.POST(
+            '/media/files/ids',
+            {
+              body: {
+                ids: dto.imageIds,
+              },
+              // headers: headersForwarding.extractForwardingHeaders(
+              //   // this.request.headers,
+              // ),
             },
-          });
+          );
 
           const newProductImages = images.data.map(
             (image) =>
@@ -399,11 +416,17 @@ export class ProductsService {
 
         if (dto.imageIds?.length) {
           await tx.delete(productImages).where(eq(productImages.productId, id));
-          const images = await this.apiClientService.media.GET('/media/ids', {
-            body: {
-              ids: dto.imageIds,
+          const images = await this.apiClientService.media.POST(
+            '/media/files/ids',
+            {
+              body: {
+                ids: dto.imageIds,
+              },
+              // headers: headersForwarding.extractForwardingHeaders(
+              //   this.request.headers,
+              // ),
             },
-          });
+          );
           const newProductImages = images.data.map(
             (image) =>
               ({
@@ -435,6 +458,68 @@ export class ProductsService {
       );
       throw new BadRequestException(
         `Failed to update product: ${error.message}`,
+      );
+    }
+  }
+
+  async updateProductMedia(
+    dto: UpdateProductMediaDto,
+  ): Promise<ProductMediaResponseDto | null> {
+    try {
+      const productMedia =
+        await this.drizzle.client.query.productImages.findFirst({
+          where: eq(productImages.mediaId, dto.id),
+        });
+      if (!productMedia) {
+        return null;
+      }
+      const [updatedProductMedia] = await this.drizzle.client
+        .update(productImages)
+        .set({
+          mimeType: dto.mimeType,
+          size: dto.size,
+          type: dto.type,
+          url: dto.url,
+          originalFilename: dto.originalFilename,
+        })
+        .where(eq(productImages.mediaId, dto.id))
+        .returning();
+
+      return new ProductMediaResponseDto(updatedProductMedia);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(
+        `Failed to update product media ${dto.id}: ${error.message}`,
+        error.stack,
+      );
+      throw new BadRequestException(
+        `Failed to update product media: ${error.message}`,
+      );
+    }
+  }
+
+  async removeProductMedia(id: string): Promise<boolean> {
+    try {
+      const productMedia =
+        await this.drizzle.client.query.productImages.findFirst({
+          where: eq(productImages.mediaId, id),
+        });
+      if (!productMedia) {
+        return false;
+      }
+      await this.drizzle.client
+        .delete(productImages)
+        .where(eq(productImages.mediaId, id));
+      return true;
+    } catch (error) {
+      this.logger.error(
+        `Failed to remove product media ${id}: ${error.message}`,
+        error.stack,
+      );
+      throw new BadRequestException(
+        `Failed to remove product media: ${error.message}`,
       );
     }
   }
@@ -706,12 +791,15 @@ export class ProductsService {
         );
       }
 
-      const media = await this.apiClientService.media.GET('/media/{id}', {
+      const media = await this.apiClientService.media.GET('/media/files/{id}', {
         params: {
           path: {
             id: dto.mediaId,
           },
         },
+        // headers: headersForwarding.extractForwardingHeaders(
+        //   this.request.headers,
+        // ),
       });
 
       // TODO: In a real implementation, you would fetch media details from the media service

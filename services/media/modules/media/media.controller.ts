@@ -33,20 +33,22 @@ import {
   MediaQueryDto,
   MediaResponseDto,
   PaginatedMediaResponseDto,
+  MulterFile,
   UpdateMediaDto,
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from '../../src/guards/jwt-auth.guard';
 import { MediaService } from './media.service';
 import { Request } from 'express';
+import { FormDataValidationPipe } from 'nest-shared/pipes';
 
 @ApiTags('media')
-@Controller('media')
+@Controller('media/files')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
   @Post('upload')
   @ApiBearerAuth()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Upload a single media file' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: FileUploadDto })
@@ -65,19 +67,21 @@ export class MediaController {
       }),
     )
     file: Express.Multer.File,
-    @Body() body: { isPublic?: string; path?: string; metadata?: string },
+    @Body(new FormDataValidationPipe())
+    body: FileUploadDto,
     @Req() req: Request,
   ) {
-    const isPublic = body.isPublic === 'true';
+    const isPublic = body.isPublic || false;
     const path = body.path || '';
-    const metadata = body.metadata ? JSON.parse(body.metadata) : {};
-
+    const metadata = body.metadata || {};
+    const folderId = body.folderId || '';
     return this.mediaService.create({
       file,
       ownerId: req.user?.sub,
       isPublic,
       metadata,
       path,
+      folderId,
     });
   }
 
@@ -102,13 +106,14 @@ export class MediaController {
       }),
     )
     files: Array<Express.Multer.File>,
-    @Body() body: { isPublic?: string; path?: string; metadata?: string },
+    @Body(new FormDataValidationPipe())
+    body: BatchFileUploadDto,
     @Req() req: Request,
   ) {
-    const isPublic = body.isPublic === 'true';
+    const isPublic = body.isPublic || false;
     const path = body.path || '';
-    const metadata = body.metadata ? JSON.parse(body.metadata) : {};
-
+    const metadata = body.metadata || {};
+    const folderId = body.folderId || '';
     const uploadPromises = files.map((file) =>
       this.mediaService.create({
         file,
@@ -116,6 +121,7 @@ export class MediaController {
         isPublic,
         metadata,
         path,
+        folderId,
       }),
     );
 
@@ -193,8 +199,9 @@ export class MediaController {
     return this.mediaService.delete(id, req.user.sub);
   }
 
-  @Get('ids')
+  @Post('ids')
   @ApiOperation({ summary: 'Get media by IDs' })
+  @ApiBody({ type: GetMediaByIdsDto })
   @ApiResponse({
     status: 200,
     description: 'Media by IDs',

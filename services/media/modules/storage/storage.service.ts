@@ -97,7 +97,7 @@ export class StorageService implements OnModuleInit {
       );
 
       // Generate URL for the uploaded file
-      const url = await this.getUrl({ filename, path });
+      const url = this.getPublicUrl({ filename, path });
       return url;
     } catch (error) {
       this.logger.error(
@@ -187,6 +187,20 @@ export class StorageService implements OnModuleInit {
       );
       throw error;
     }
+  }
+
+  getPublicUrl(options: StorageGetOptions): string {
+    const { filename, path = '' } = options;
+    const objectName = path ? `${path}/${filename}` : filename;
+
+    const protocol = this.configService.minio.useSSL ? 'https' : 'http';
+    const port =
+      this.configService.minio.port !==
+      (this.configService.minio.useSSL ? 443 : 80)
+        ? `:${this.configService.minio.port}`
+        : '';
+
+    return `${protocol}://${this.configService.minio.endpoint}${port}/${this.bucket}/${objectName}`;
   }
 
   /**

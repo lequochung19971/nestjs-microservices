@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtAuthModule } from 'nest-shared';
+import { JwtAuthModule, RabbitMQModule } from 'nest-shared';
 import { AppConfigModule } from './app-config/app-config.module';
 import { AppConfigService } from './app-config/app-config.service';
 import { AppController } from './app.controller';
@@ -23,6 +23,16 @@ import { ProductsModule } from './modules/products/products.module';
       },
       inject: [AppConfigService],
       imports: [AppConfigModule],
+      global: true,
+    }),
+    RabbitMQModule.forRootAsync({
+      imports: [AppConfigModule],
+      inject: [AppConfigService],
+      useFactory: (appConfigService: AppConfigService) => {
+        return {
+          uri: `amqp://${appConfigService.rabbitmq.user}:${appConfigService.rabbitmq.password}@${appConfigService.rabbitmq.host}:${appConfigService.rabbitmq.port}/${encodeURIComponent(appConfigService.rabbitmq.vhost || '/')}`,
+        };
+      },
       global: true,
     }),
   ],

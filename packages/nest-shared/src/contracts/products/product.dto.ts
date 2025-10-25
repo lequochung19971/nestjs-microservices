@@ -6,12 +6,15 @@ import {
   IsDate,
   IsDecimal,
   IsEnum,
+  IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { CategoryDto } from '../categories/category.dto';
+import { MediaType } from '../media/media.dto';
 
 export enum Currency {
   USD = 'USD',
@@ -224,4 +227,50 @@ export class ProductDto {
   constructor(data: Partial<ProductDto>) {
     Object.assign(this, data);
   }
+}
+
+export class UpdateProductMediaDto {
+  @ApiProperty({
+    description: 'Product media ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsUUID()
+  id: string;
+
+  @ApiProperty({
+    description: 'Original filename',
+    example: 'product-image.jpg',
+  })
+  @IsString()
+  originalFilename: string;
+
+  @ApiProperty({
+    description: 'MIME type',
+    example: 'image/jpeg',
+  })
+  @IsString()
+  mimeType: string;
+
+  @ApiProperty({
+    description: 'File size in bytes',
+    example: 1024000,
+  })
+  @IsNumber()
+  size: number;
+
+  @ApiProperty({
+    description: 'Media type',
+    example: 'IMAGE',
+  })
+  @IsString()
+  @IsEnum(MediaType)
+  type: MediaType;
+
+  @ApiProperty({
+    description: 'URL',
+    example: 'https://example.com/images/product-123.jpg',
+  })
+  @IsString()
+  @IsUrl()
+  url: string;
 }

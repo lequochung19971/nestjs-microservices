@@ -11,6 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Get welcome message */
         get: operations["AppController_getHello"];
         put?: never;
         post?: never;
@@ -27,6 +28,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Health check endpoint */
         get: operations["AppController_health"];
         put?: never;
         post?: never;
@@ -43,6 +45,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Protected endpoint example */
         get: operations["AppController_protected"];
         put?: never;
         post?: never;
@@ -367,7 +370,7 @@ export interface paths {
         patch: operations["CategoriesController_update"];
         trace?: never;
     };
-    "/api/media/upload": {
+    "/api/media/files/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -383,7 +386,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/media/upload/batch": {
+    "/api/media/files/upload/batch": {
         parameters: {
             query?: never;
             header?: never;
@@ -392,6 +395,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Upload multiple media files */
         post: operations["MediaController_uploadFiles"];
         delete?: never;
         options?: never;
@@ -399,7 +403,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/media": {
+    "/api/media/files": {
         parameters: {
             query?: never;
             header?: never;
@@ -415,7 +419,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/media/{id}": {
+    "/api/media/files/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -591,6 +595,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all admin users with pagination and filtering */
+        get: operations["AdminController_getAllAdmins"];
+        put?: never;
+        /** Create a new admin user */
+        post: operations["AdminController_createAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get admin user by ID */
+        get: operations["AdminController_getAdmin"];
+        /** Update admin user */
+        put: operations["AdminController_updateAdmin"];
+        post?: never;
+        /** Delete admin user */
+        delete: operations["AdminController_deleteAdmin"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign roles to admin user */
+        post: operations["AdminController_assignRoles"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/{id}/roles/{roleName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove role from admin user */
+        delete: operations["AdminController_removeRole"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/admin/users/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all available roles */
+        get: operations["AdminController_getAllRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -646,15 +738,15 @@ export interface components {
         };
         LoginDto: {
             /**
-             * @description User password
-             * @example password123
-             */
-            password: string;
-            /**
              * @description Username for the account
              * @example johndoe
              */
             username: string;
+            /**
+             * @description User password
+             * @example password123
+             */
+            password: string;
         };
         CodeExchangeDto: {
             /**
@@ -1072,16 +1164,6 @@ export interface components {
              * @example IMAGE
              */
             type: string;
-            /**
-             * @description Image width in pixels
-             * @example 1920
-             */
-            width?: number;
-            /**
-             * @description Image height in pixels
-             * @example 1080
-             */
-            height?: number;
         };
         DetachMediaFromProductResponseDto: {
             /**
@@ -1176,6 +1258,83 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             };
+            /** @description Folder ID where the file should be stored */
+            folderId?: string;
+        };
+        /**
+         * @description Type of media
+         * @enum {string}
+         */
+        MediaType: "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT";
+        MediaVariantResponseDto: {
+            /** @description Variant ID */
+            id: string;
+            /** @description Media ID this variant belongs to */
+            mediaId: string;
+            /** @description Variant name */
+            name: string;
+            /** @description Storage path */
+            path: string;
+            /** @description URL to access the variant */
+            url: string;
+            /** @description Width of the variant in pixels */
+            width?: number;
+            /** @description Height of the variant in pixels */
+            height?: number;
+            /** @description Size of the variant file in bytes */
+            size: number;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updatedAt: string;
+        };
+        MediaResponseDto: {
+            /** @description Media ID */
+            id: string;
+            /** @description Filename in storage */
+            filename: string;
+            /** @description Original uploaded filename */
+            originalFilename: string;
+            /** @description MIME type of the file */
+            mimeType: string;
+            /** @description Size of the file in bytes */
+            size: number;
+            /** @description Type of media */
+            type: components["schemas"]["MediaType"];
+            /** @description Storage provider */
+            provider: string;
+            /** @description Path in storage */
+            path?: string;
+            /** @description URL to access the media */
+            url: string;
+            /** @description Media processing status */
+            status: string;
+            /** @description ID of the media owner */
+            ownerId: string;
+            /** @description Whether the media is publicly accessible */
+            isPublic: boolean;
+            /** @description Additional metadata */
+            metadata?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updatedAt: string;
+            /** @description Media variants */
+            variants?: components["schemas"]["MediaVariantResponseDto"][];
         };
         BatchFileUploadDto: {
             /** @description Media files to upload */
@@ -1188,9 +1347,23 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             };
+            /** @description Folder ID where the files should be stored */
+            folderId?: string;
         };
-        /** @enum {string} */
-        MediaType: "IMAGE" | "VIDEO" | "AUDIO" | "DOCUMENT";
+        PaginatedMediaResponseDto: {
+            /** @description List of media items */
+            items: components["schemas"]["MediaResponseDto"][];
+            /**
+             * @description Pagination metadata
+             * @example {
+             *       "page": 1,
+             *       "limit": 20,
+             *       "total": 100,
+             *       "totalPages": 5
+             *     }
+             */
+            meta: Record<string, never>;
+        };
         /**
          * @description Status of the media processing
          * @enum {string}
@@ -1223,6 +1396,54 @@ export interface components {
             /** @description URL to access the media */
             url?: string;
         };
+        DeleteMediaResponseDto: {
+            /** @description ID of the deleted media */
+            id: string;
+            /** @description Whether the deletion was successful */
+            success: boolean;
+        };
+        FolderResponseDto: {
+            /** @description Folder ID */
+            id: string;
+            /** @description Folder name */
+            name: string;
+            /** @description Parent folder ID */
+            parentId?: string | null;
+            /** @description ID of the folder owner */
+            ownerId: string;
+            /** @description Full path of the folder */
+            path: string;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updatedAt: string;
+            /** @description Parent folder details */
+            parent?: ({
+                [key: string]: unknown;
+            } & components["schemas"]["FolderResponseDto"]) | null;
+            /** @description Child folders */
+            children?: components["schemas"]["FolderResponseDto"][];
+        };
+        PaginatedFolderResponseDto: {
+            /** @description List of folders */
+            items: components["schemas"]["FolderResponseDto"][];
+            /**
+             * @description Pagination metadata
+             * @example {
+             *       "page": 1,
+             *       "limit": 20,
+             *       "total": 100,
+             *       "totalPages": 5
+             *     }
+             */
+            meta: Record<string, never>;
+        };
         CreateFolderDto: {
             /** @description Name of the folder */
             name: string;
@@ -1243,6 +1464,38 @@ export interface components {
             /** @description Target folder ID */
             folderId: string;
         };
+        TagResponseDto: {
+            /** @description Tag ID */
+            id: string;
+            /** @description Tag name */
+            name: string;
+            /** @description Tag description */
+            description?: string;
+            /**
+             * Format: date-time
+             * @description Creation timestamp
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @description Last update timestamp
+             */
+            updatedAt: string;
+        };
+        PaginatedTagResponseDto: {
+            /** @description List of tags */
+            items: components["schemas"]["TagResponseDto"][];
+            /**
+             * @description Pagination metadata
+             * @example {
+             *       "page": 1,
+             *       "limit": 50,
+             *       "total": 100,
+             *       "totalPages": 2
+             *     }
+             */
+            meta: Record<string, never>;
+        };
         CreateTagDto: {
             /** @description Tag name */
             name: string;
@@ -1260,6 +1513,178 @@ export interface components {
             mediaIds: string[];
             /** @description List of tag IDs to apply */
             tagIds: string[];
+        };
+        CreateAdminUserDto: {
+            /**
+             * @description Username for the admin account
+             * @example admin_user
+             */
+            username: string;
+            /**
+             * @description Email address
+             * @example admin@example.com
+             */
+            email: string;
+            /**
+             * @description Password for the account
+             * @example strongPassword123
+             */
+            password: string;
+            /**
+             * @description First name
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description Admin roles to assign
+             * @example [
+             *       "admin",
+             *       "user-manager"
+             *     ]
+             */
+            roles?: string[];
+        };
+        AdminUserDto: {
+            /**
+             * @description Unique identifier for the admin user
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Username of the admin user
+             * @example admin_user
+             */
+            username: string;
+            /**
+             * @description Email address of the admin user
+             * @example admin@example.com
+             */
+            email: string;
+            /**
+             * @description First name of the admin user
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name of the admin user
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description Whether the user account is enabled
+             * @example true
+             */
+            enabled: boolean;
+            /**
+             * @description Roles assigned to the admin user
+             * @example [
+             *       "admin",
+             *       "user-manager"
+             *     ]
+             */
+            roles: string[];
+            /**
+             * @description When the user was created
+             * @example 2023-01-01T00:00:00.000Z
+             */
+            createdTimestamp?: number;
+            /**
+             * @description Whether email is verified
+             * @example true
+             */
+            emailVerified?: boolean;
+        };
+        AdminUserPaginatedResponse: {
+            /** @description List of admin users */
+            items: components["schemas"]["AdminUserDto"][];
+            /**
+             * @description Total number of admin users
+             * @example 42
+             */
+            total: number;
+            /**
+             * @description Current page number
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Number of items per page
+             * @example 10
+             */
+            limit: number;
+        };
+        UpdateAdminUserDto: {
+            /**
+             * @description Username for the admin account
+             * @example admin_user
+             */
+            username?: string;
+            /**
+             * @description Email address
+             * @example admin@example.com
+             */
+            email?: string;
+            /**
+             * @description Password for the account
+             * @example newStrongPassword123
+             */
+            password?: string;
+            /**
+             * @description First name
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description User status (enabled/disabled)
+             * @example true
+             */
+            enabled?: boolean;
+        };
+        RoleAssignmentDto: {
+            /**
+             * @description Roles to assign to the user
+             * @example [
+             *       "admin",
+             *       "user-manager"
+             *     ]
+             */
+            roles: string[];
+        };
+        RoleDto: {
+            /**
+             * @description Role ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Role name
+             * @example admin
+             */
+            name: string;
+            /**
+             * @description Role description
+             * @example Administrator with full access
+             */
+            description: string;
+            /**
+             * @description Whether this is a composite role
+             * @example false
+             */
+            composite: boolean;
+        };
+        RolesListResponse: {
+            /** @description List of available roles */
+            roles: components["schemas"]["RoleDto"][];
         };
     };
     responses: never;
@@ -1998,6 +2423,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Categories found successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
@@ -2021,7 +2447,8 @@ export interface operations {
             };
         };
         responses: {
-            default: {
+            /** @description Category created successfully */
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2042,7 +2469,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            default: {
+            /** @description Category found successfully */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2063,7 +2491,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            default: {
+            /** @description Category removed successfully */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2088,7 +2517,8 @@ export interface operations {
             };
         };
         responses: {
-            default: {
+            /** @description Category updated successfully */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2107,15 +2537,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["FileUploadDto"];
+                "multipart/form-data": components["schemas"]["FileUploadDto"];
             };
         };
         responses: {
+            /** @description Media file uploaded successfully */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MediaResponseDto"];
+                };
             };
         };
     };
@@ -2128,15 +2561,18 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["BatchFileUploadDto"];
+                "multipart/form-data": components["schemas"]["BatchFileUploadDto"];
             };
         };
         responses: {
+            /** @description Media files uploaded successfully */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MediaResponseDto"][];
+                };
             };
         };
     };
@@ -2164,11 +2600,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description List of media files */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaginatedMediaResponseDto"];
+                };
             };
         };
     };
@@ -2183,11 +2622,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Media file by ID */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MediaResponseDto"];
+                };
             };
         };
     };
@@ -2206,11 +2648,14 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Media file updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MediaResponseDto"];
+                };
             };
         };
     };
@@ -2225,26 +2670,29 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Media file deleted */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["DeleteMediaResponseDto"];
+                };
             };
         };
     };
     FolderController_getFolders: {
         parameters: {
             query?: {
-                /** @description ID of the parent folder */
+                /** @description Parent folder ID */
                 parentId?: string;
-                /** @description Search folders by name */
+                /** @description Search query */
                 search?: string;
-                /** @description Page number (1-based) */
+                /** @description Page number */
                 page?: number;
-                /** @description Number of items per page */
+                /** @description Items per page */
                 limit?: number;
-                /** @description ID of the folder owner */
+                /** @description Owner ID */
                 ownerId?: string;
             };
             header?: never;
@@ -2253,11 +2701,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description List of folders */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaginatedFolderResponseDto"];
+                };
             };
         };
     };
@@ -2401,11 +2852,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
+            /** @description Tags */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["PaginatedTagResponseDto"];
+                };
             };
         };
     };
@@ -2422,11 +2876,14 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Tag created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TagResponseDto"];
+                };
             };
         };
     };
@@ -2435,17 +2892,21 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description Tag ID */
                 id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
+            /** @description Tag */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TagResponseDto"];
+                };
             };
         };
     };
@@ -2454,6 +2915,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description Tag ID */
                 id: string;
             };
             cookie?: never;
@@ -2464,11 +2926,14 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Tag updated */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TagResponseDto"];
+                };
             };
         };
     };
@@ -2496,17 +2961,21 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description Tag ID */
                 id: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
+            /** @description Media with tag */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["MediaResponseDto"][];
+                };
             };
         };
     };
@@ -2515,17 +2984,21 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
+                /** @description Media ID */
                 mediaId: string;
             };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
+            /** @description Tags for the media item */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TagResponseDto"][];
+                };
             };
         };
     };
@@ -2542,11 +3015,14 @@ export interface operations {
             };
         };
         responses: {
-            201: {
+            /** @description Tags added to media */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TagResponseDto"];
+                };
             };
         };
     };
@@ -2563,7 +3039,368 @@ export interface operations {
             };
         };
         responses: {
+            /** @description Tags removed from media */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TagResponseDto"];
+                };
+            };
+        };
+    };
+    AdminController_getAllAdmins: {
+        parameters: {
+            query?: {
+                /** @description Number of items to return */
+                limit?: number;
+                /** @description Number of items to skip */
+                offset?: number;
+                /** @description Search term for username or email */
+                search?: string;
+                /** @description Sort field */
+                sortBy?: "username" | "email" | "createdTimestamp";
+                /** @description Sort order */
+                sortOrder?: "asc" | "desc";
+                /** @description Filter by exact role */
+                role?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Admin users retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserPaginatedResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_createAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAdminUserDto"];
+            };
+        };
+        responses: {
+            /** @description Admin user successfully created */
             201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Invalid input data */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_getAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Admin user retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_updateAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAdminUserDto"];
+            };
+        };
+        responses: {
+            /** @description Admin user updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Invalid input data */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_deleteAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Admin user deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_assignRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleAssignmentDto"];
+            };
+        };
+        responses: {
+            /** @description Roles assigned successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user or role not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_removeRole: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                roleName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Role removed successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user or role not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_getAllRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Roles retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RolesListResponse"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

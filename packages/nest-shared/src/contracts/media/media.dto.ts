@@ -3,7 +3,7 @@ import {
   ApiPropertyOptional,
   getSchemaPath,
 } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -18,6 +18,7 @@ import {
   Min,
 } from 'class-validator';
 
+import { FolderResponseDto } from './folder.dto';
 import { MediaVariantResponseDto } from './variant.dto';
 
 export enum MediaType {
@@ -73,6 +74,13 @@ export class CreateMediaDto {
   @IsString()
   @IsOptional()
   path?: string;
+
+  @ApiPropertyOptional({
+    description: 'Folder ID where the media is stored',
+  })
+  @IsString()
+  @IsOptional()
+  folderId?: string;
 }
 
 export class MediaQueryDto {
@@ -215,21 +223,26 @@ export class UpdateMediaDto {
 export class FileUploadDto {
   @ApiProperty({
     type: 'string',
-    format: 'binary',
+    format: 'binary' as const,
     description: 'Media file to upload',
   })
-  file: any;
+  file: MulterFile;
 
   @ApiPropertyOptional({
     type: 'boolean',
     description: 'Whether the file is publicly accessible',
   })
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
   isPublic?: boolean;
 
   @ApiPropertyOptional({
     type: 'string',
     description: 'Path where the file should be stored',
   })
+  @IsString()
+  @Type(() => String)
   path?: string;
 
   @ApiPropertyOptional({
@@ -237,27 +250,47 @@ export class FileUploadDto {
     description: 'Additional metadata for the file',
     additionalProperties: true,
   })
+  @IsObject()
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
   metadata?: Record<string, any>;
+
+  @ApiPropertyOptional({
+    type: 'string',
+    description: 'Folder ID where the file should be stored',
+  })
+  @IsString()
+  @IsOptional()
+  @Type(() => String)
+  folderId?: string;
 }
 
 export class BatchFileUploadDto {
   @ApiProperty({
     type: 'array',
-    items: { type: 'string', format: 'binary' },
+    items: { type: 'string', format: 'binary' as const },
     description: 'Media files to upload',
   })
-  files: any[];
+  files: MulterFile[];
 
   @ApiPropertyOptional({
     type: 'boolean',
     description: 'Whether the files are publicly accessible',
   })
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
   isPublic?: boolean;
 
   @ApiPropertyOptional({
     type: 'string',
     description: 'Path where the files should be stored',
   })
+  @IsString()
+  @IsOptional()
+  @Type(() => String)
   path?: string;
 
   @ApiPropertyOptional({
@@ -265,7 +298,21 @@ export class BatchFileUploadDto {
     description: 'Additional metadata for the files',
     additionalProperties: true,
   })
+  @IsObject()
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
   metadata?: Record<string, any>;
+
+  @ApiPropertyOptional({
+    type: 'string',
+    description: 'Folder ID where the files should be stored',
+  })
+  @IsString()
+  @IsOptional()
+  @Type(() => String)
+  folderId?: string;
 }
 
 export class MediaResponseDto {
@@ -327,6 +374,7 @@ export class MediaResponseDto {
     type: [MediaVariantResponseDto],
   })
   variants?: MediaVariantResponseDto[];
+  folder?: FolderResponseDto;
 }
 
 export class PaginatedMediaResponseDto {

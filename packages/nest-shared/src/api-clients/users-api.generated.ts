@@ -157,6 +157,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all admin users */
+        get: operations["AdminController_getAllAdminUsers"];
+        put?: never;
+        /** Create a new admin user */
+        post: operations["AdminController_createAdminUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get admin user by ID */
+        get: operations["AdminController_getAdminUserById"];
+        /** Update admin user */
+        put: operations["AdminController_updateAdminUser"];
+        post?: never;
+        /** Delete admin user */
+        delete: operations["AdminController_deleteAdminUser"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assign roles to admin user */
+        post: operations["AdminController_assignRolesToUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{id}/roles/{roleName}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove role from admin user */
+        delete: operations["AdminController_removeRoleFromUser"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all available roles */
+        get: operations["AdminController_getAllRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -224,15 +312,15 @@ export interface components {
         };
         LoginDto: {
             /**
-             * @description User password
-             * @example password123
-             */
-            password: string;
-            /**
              * @description Username for the account
              * @example johndoe
              */
             username: string;
+            /**
+             * @description User password
+             * @example password123
+             */
+            password: string;
         };
         LogoutDto: {
             /**
@@ -247,6 +335,178 @@ export interface components {
              * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
              */
             refreshToken: string;
+        };
+        CreateAdminUserDto: {
+            /**
+             * @description Username for the admin account
+             * @example admin_user
+             */
+            username: string;
+            /**
+             * @description Email address
+             * @example admin@example.com
+             */
+            email: string;
+            /**
+             * @description Password for the account
+             * @example strongPassword123
+             */
+            password: string;
+            /**
+             * @description First name
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description Admin roles to assign
+             * @example [
+             *       "admin",
+             *       "user-manager"
+             *     ]
+             */
+            roles?: string[];
+        };
+        AdminUserDto: {
+            /**
+             * @description Unique identifier for the admin user
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Username of the admin user
+             * @example admin_user
+             */
+            username: string;
+            /**
+             * @description Email address of the admin user
+             * @example admin@example.com
+             */
+            email: string;
+            /**
+             * @description First name of the admin user
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name of the admin user
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description Whether the user account is enabled
+             * @example true
+             */
+            enabled: boolean;
+            /**
+             * @description Roles assigned to the admin user
+             * @example [
+             *       "admin",
+             *       "user-manager"
+             *     ]
+             */
+            roles: string[];
+            /**
+             * @description When the user was created
+             * @example 2023-01-01T00:00:00.000Z
+             */
+            createdTimestamp?: number;
+            /**
+             * @description Whether email is verified
+             * @example true
+             */
+            emailVerified?: boolean;
+        };
+        AdminUserPaginatedResponse: {
+            /** @description List of admin users */
+            items: components["schemas"]["AdminUserDto"][];
+            /**
+             * @description Total number of admin users
+             * @example 42
+             */
+            total: number;
+            /**
+             * @description Current page number
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Number of items per page
+             * @example 10
+             */
+            limit: number;
+        };
+        UpdateAdminUserDto: {
+            /**
+             * @description Username for the admin account
+             * @example admin_user
+             */
+            username?: string;
+            /**
+             * @description Email address
+             * @example admin@example.com
+             */
+            email?: string;
+            /**
+             * @description Password for the account
+             * @example newStrongPassword123
+             */
+            password?: string;
+            /**
+             * @description First name
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description User status (enabled/disabled)
+             * @example true
+             */
+            enabled?: boolean;
+        };
+        RoleAssignmentDto: {
+            /**
+             * @description Roles to assign to the user
+             * @example [
+             *       "admin",
+             *       "user-manager"
+             *     ]
+             */
+            roles: string[];
+        };
+        RoleDto: {
+            /**
+             * @description Role ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Role name
+             * @example admin
+             */
+            name: string;
+            /**
+             * @description Role description
+             * @example Administrator with full access
+             */
+            description: string;
+            /**
+             * @description Whether this is a composite role
+             * @example false
+             */
+            composite: boolean;
+        };
+        RolesListResponse: {
+            /** @description List of available roles */
+            roles: components["schemas"]["RoleDto"][];
         };
     };
     responses: never;
@@ -515,6 +775,252 @@ export interface operations {
                         sub?: string;
                         typ?: string;
                     };
+                };
+            };
+        };
+    };
+    AdminController_getAllAdminUsers: {
+        parameters: {
+            query?: {
+                /** @description Number of items to return */
+                limit?: number;
+                /** @description Number of items to skip */
+                offset?: number;
+                /** @description Search term for username or email */
+                search?: string;
+                /** @description Sort field */
+                sortBy?: "username" | "email" | "createdTimestamp";
+                /** @description Sort order */
+                sortOrder?: "asc" | "desc";
+                /** @description Filter by exact role */
+                role?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Admin users retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserPaginatedResponse"];
+                };
+            };
+        };
+    };
+    AdminController_createAdminUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAdminUserDto"];
+            };
+        };
+        responses: {
+            /** @description Admin user created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Invalid input data */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_getAdminUserById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Admin user retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Admin user not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_updateAdminUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAdminUserDto"];
+            };
+        };
+        responses: {
+            /** @description Admin user updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto"];
+                };
+            };
+            /** @description Invalid input data */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_deleteAdminUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Admin user deleted successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Admin user not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_assignRolesToUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RoleAssignmentDto"];
+            };
+        };
+        responses: {
+            /** @description Roles assigned successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User or role not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_removeRoleFromUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                roleName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Role removed successfully */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description User or role not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AdminController_getAllRoles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Roles retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RolesListResponse"];
                 };
             };
         };

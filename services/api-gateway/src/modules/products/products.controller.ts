@@ -41,6 +41,8 @@ import { ProductsService } from './products.service';
 
 @ApiTags('products')
 @Controller('products')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 export class ProductsController {
   private readonly logger = new Logger(ProductsController.name);
 

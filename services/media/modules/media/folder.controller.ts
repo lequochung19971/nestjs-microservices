@@ -78,7 +78,10 @@ export class FolderController {
     description: 'List of folders',
     type: PaginatedFolderResponseDto,
   })
-  async getFolders(@Query() query: FolderQueryDto, @Request() req) {
+  async getFolders(
+    @Query() query: FolderQueryDto,
+    @Request() req,
+  ): Promise<PaginatedFolderResponseDto> {
     return this.folderService.findAll({
       ...query,
       ownerId: req.user.sub,

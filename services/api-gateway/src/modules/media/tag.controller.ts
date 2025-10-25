@@ -19,37 +19,72 @@ import {
   UpdateTagDto,
   TagQueryDto,
   AddTagsToMediaDto,
+  TagResponseDto,
+  PaginatedTagResponseDto,
+  MediaResponseDto,
 } from 'nest-shared/contracts';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('tags')
 @Controller('media/tags')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 export class TagController {
   private readonly logger = new Logger(TagController.name);
 
   constructor(private readonly mediaService: MediaService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @ApiQuery({ type: TagQueryDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tags',
+    type: PaginatedTagResponseDto,
+  })
   async getTags(@Query() query: TagQueryDto, @Request() req) {
     this.logger.log('Getting tags');
     return this.mediaService.getTags(query, req.headers);
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  async createTag(@Body() tagData: CreateTagDto, @Request() req) {
-    this.logger.log(`Creating tag with name: ${tagData.name}`);
-    return this.mediaService.createTag(tagData, req.headers);
+  @ApiBody({ type: CreateTagDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Tag created',
+    type: TagResponseDto,
+  })
+  async createTag(@Body() createTagDto: CreateTagDto, @Request() req) {
+    this.logger.log(`Creating tag with name: ${createTagDto.name}`);
+    return this.mediaService.createTag(createTagDto, req.headers);
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', description: 'Tag ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tag',
+    type: TagResponseDto,
+  })
   async getTagById(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     this.logger.log(`Getting tag with id: ${id}`);
     return this.mediaService.getTagById(id, req.headers);
   }
 
   @Get(':id/media')
-  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', description: 'Tag ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Media with tag',
+    type: [MediaResponseDto],
+  })
   async getMediaWithTag(
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req,
@@ -59,7 +94,12 @@ export class TagController {
   }
 
   @Get('media/:mediaId')
-  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'mediaId', description: 'Media ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tags for the media item',
+    type: [TagResponseDto],
+  })
   async getTagsForMedia(
     @Param('mediaId', ParseUUIDPipe) mediaId: string,
     @Request() req,
@@ -69,7 +109,13 @@ export class TagController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', description: 'Tag ID' })
+  @ApiBody({ type: UpdateTagDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tag updated',
+    type: TagResponseDto,
+  })
   async updateTag(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateData: UpdateTagDto,
@@ -80,21 +126,30 @@ export class TagController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
   async deleteTag(@Param('id', ParseUUIDPipe) id: string, @Request() req) {
     this.logger.log(`Deleting tag with id: ${id}`);
     return this.mediaService.deleteTag(id, req.headers);
   }
 
   @Post('add-to-media')
-  @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: AddTagsToMediaDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tags added to media',
+    type: TagResponseDto,
+  })
   async addTagsToMedia(@Body() addTagsData: AddTagsToMediaDto, @Request() req) {
     this.logger.log('Adding tags to media');
     return this.mediaService.addTagsToMedia(addTagsData, req.headers);
   }
 
   @Post('remove-from-media')
-  @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: AddTagsToMediaDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Tags removed from media',
+    type: TagResponseDto,
+  })
   async removeTagsFromMedia(
     @Body() removeTagsData: AddTagsToMediaDto,
     @Request() req,

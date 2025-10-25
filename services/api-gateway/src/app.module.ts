@@ -5,12 +5,11 @@ import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { ThrottlerModule } from '@nestjs/throttler';
 
-import { JwtAuthModule } from 'nest-shared';
+import { JwtAuthModule, RolesGuard } from 'nest-shared';
 import { AppConfigModule, AppConfigService } from './app-config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RolesGuard } from './guards/roles.guard';
 import { ErrorMiddleware } from './middleware/error.middleware';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -18,6 +17,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProductsModule } from './modules/products';
 import { CategoriesModule } from './modules/categories';
 import { MediaModule } from './modules/media';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -57,6 +57,7 @@ import { MediaModule } from './modules/media';
     ProductsModule,
     CategoriesModule,
     MediaModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

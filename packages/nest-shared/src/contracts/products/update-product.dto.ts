@@ -48,7 +48,6 @@ export class UpdateProductDto {
   })
   @IsOptional()
   @IsDecimal({ decimal_digits: '2' })
-  @Min(0, { message: 'Price must be positive' })
   price?: string;
 
   @ApiPropertyOptional({

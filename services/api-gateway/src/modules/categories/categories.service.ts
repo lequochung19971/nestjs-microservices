@@ -19,7 +19,7 @@ export class CategoriesService {
 
   async create(
     dto: CreateCategoryDto,
-    headers: Request['headers'],
+    headers?: Request['headers'],
   ): Promise<CategoryDto> {
     return this.apiClientService.products
       .POST('/categories', {
@@ -35,7 +35,7 @@ export class CategoriesService {
 
   async findAll(
     query: QueryCategoryRequest,
-    headers: Request['headers'],
+    headers?: Request['headers'],
   ): Promise<QueryCategoryResponse> {
     return this.apiClientService.products
       .GET('/categories', {
@@ -47,7 +47,10 @@ export class CategoriesService {
       .then((response) => response.data as unknown as QueryCategoryResponse);
   }
 
-  async findOne(id: string, headers: Request['headers']): Promise<CategoryDto> {
+  async findOne(
+    id: string,
+    headers?: Request['headers'],
+  ): Promise<CategoryDto> {
     return this.apiClientService.products
       .GET('/categories/{id}', {
         params: {
@@ -63,7 +66,7 @@ export class CategoriesService {
   async update(
     id: string,
     dto: UpdateCategoryDto,
-    headers: Request['headers'],
+    headers?: Request['headers'],
   ): Promise<CategoryDto> {
     return this.apiClientService.products
       .PATCH('/categories/{id}', {
@@ -82,7 +85,7 @@ export class CategoriesService {
       .then((response) => response.data as unknown as CategoryDto);
   }
 
-  async remove(id: string, headers: Request['headers']): Promise<CategoryDto> {
+  async remove(id: string, headers?: Request['headers']): Promise<CategoryDto> {
     return this.apiClientService.products
       .DELETE('/categories/{id}', {
         params: {

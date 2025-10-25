@@ -24,10 +24,18 @@ import {
   CategoryDto,
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('categories')
 @Controller('categories')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 export class CategoriesController {
   private readonly logger = new Logger(CategoriesController.name);
 

@@ -1,2 +1,3 @@
-export * from './jwt-auth';
+export * from './auth';
 export * from './keycloak';
+export * from './rabbitmq';

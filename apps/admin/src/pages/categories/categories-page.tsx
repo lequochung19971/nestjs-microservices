@@ -1,15 +1,17 @@
-import { useState } from 'react';
-import { CategoriesTable } from '@/components/categories/categories-table';
-import { CreateCategoryDialog } from '@/components/categories/create-category-dialog';
-import { EditCategoryDialog } from '@/components/categories/edit-category-dialog';
-import type { ApiSchema } from '@/http-clients';
+import { useState } from "react";
+import { CategoriesTable } from "@/modules/categories/components/categories-table";
+import { CreateCategoryDialog } from "@/modules/categories/components/create-category-dialog";
+import { EditCategoryDialog } from "@/modules/categories/components/edit-category-dialog";
+import type { ApiSchema } from "@/http-clients";
 
-type CategoryDto = ApiSchema['CategoryDto'];
+type CategoryDto = ApiSchema["CategoryDto"];
 
 export function CategoriesPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [categoryToEdit, setCategoryToEdit] = useState<CategoryDto | null>(null);
+  const [categoryToEdit, setCategoryToEdit] = useState<CategoryDto | null>(
+    null,
+  );
 
   const handleCreateCategory = () => {
     setCreateDialogOpen(true);
@@ -30,7 +32,9 @@ export function CategoriesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Categories</h2>
-          <p className="text-muted-foreground">Organize your products with categories</p>
+          <p className="text-muted-foreground">
+            Organize your products with categories
+          </p>
         </div>
       </div>
 
@@ -39,7 +43,10 @@ export function CategoriesPage() {
         onEditCategory={handleEditCategory}
       />
 
-      <CreateCategoryDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen} />
+      <CreateCategoryDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
 
       <EditCategoryDialog
         category={categoryToEdit}

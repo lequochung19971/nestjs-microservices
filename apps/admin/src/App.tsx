@@ -1,15 +1,21 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/auth-context';
-import { QueryProvider } from './providers/query-provider';
-import { ProtectedRoute } from './components/auth/protected-route';
-import { LoginPage } from './pages/auth/login-page';
-import { AppLayout } from './components/layout/app-layout';
-import { DashboardPage } from './pages/dashboard/dashboard-page';
-import { ProductsPage } from './pages/products/products-page';
-import { CategoriesPage } from './pages/categories/categories-page';
-import { MediaPage } from './pages/media/media-page';
-import { OrdersPage } from './pages/orders/orders-page';
-import { UsersPage } from './pages/users/users-page';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthProvider } from "./contexts/auth-context";
+import { QueryProvider } from "./providers/query-provider";
+import { ProtectedRoute } from "./components/auth/protected-route";
+import { LoginPage } from "./pages/auth/login-page";
+import { AppLayout } from "./components/layout/app-layout";
+import { DashboardPage } from "./pages/dashboard/dashboard-page";
+import { ProductsPage } from "./pages/products/products-page";
+import { CategoriesPage } from "./pages/categories/categories-page";
+import { MediaPage } from "./pages/media/media-page";
+import { OrdersPage } from "./pages/orders/orders-page";
+import { UsersPage } from "./pages/users/users-page";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   return (
@@ -37,6 +43,7 @@ function App() {
               }
             />
           </Routes>
+          <Toaster />
         </Router>
       </AuthProvider>
     </QueryProvider>

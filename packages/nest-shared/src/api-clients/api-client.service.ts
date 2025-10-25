@@ -96,7 +96,7 @@ export class ApiClientService {
 
         // Throw a generic internal server error for unexpected errors
         throw new InternalServerErrorException(
-          `Failed to communicate with ${serviceName} service`,
+          error.message || `Failed to communicate with ${serviceName} service`,
         );
       }
     };

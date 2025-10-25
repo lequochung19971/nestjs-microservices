@@ -31,11 +31,20 @@ export interface AppConfig {
   nodeEnv: string;
 }
 
+export interface RabbitMQConfig {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+  vhost: string;
+}
+
 export interface AllConfig {
   database: DatabaseConfig;
   keycloak: KeycloakConfig;
   keycloakClient: KeycloakClientConfig;
   app: AppConfig;
+  rabbitmq: RabbitMQConfig;
 }
 
 @Injectable()
@@ -98,12 +107,26 @@ export class AppConfigService {
     };
   }
 
+  get rabbitmq(): RabbitMQConfig {
+    return {
+      host: this.configService.get<string>('RABBITMQ_HOST', 'localhost'),
+      port: this.configService.get<number>('RABBITMQ_PORT', 5672),
+      user: this.configService.get<string>('RABBITMQ_USER', 'rabbitmq_user'),
+      password: this.configService.get<string>(
+        'RABBITMQ_PASSWORD',
+        'rabbitmq_password',
+      ),
+      vhost: this.configService.get<string>('RABBITMQ_VHOST', '/'),
+    };
+  }
+
   get all(): AllConfig {
     return {
       database: this.database,
       keycloak: this.keycloak,
       keycloakClient: this.keycloakAdmin,
       app: this.app,
+      rabbitmq: this.rabbitmq,
     };
   }
 
@@ -146,6 +169,10 @@ export class AppConfigService {
       'KEYCLOAK_RESOURCE',
       'PORT',
       'NODE_ENV',
+      'RABBITMQ_HOST',
+      'RABBITMQ_PORT',
+      'RABBITMQ_USER',
+      'RABBITMQ_PASSWORD',
     ];
 
     const missingConfigs = requiredConfigs.filter(
@@ -186,5 +213,12 @@ export class AppConfigService {
       port: this.app.port,
       nodeEnv: this.app.nodeEnv,
     };
+  }
+
+  /**
+   * Get RabbitMQ configuration
+   */
+  getRabbitMQConfig() {
+    return this.rabbitmq;
   }
 }

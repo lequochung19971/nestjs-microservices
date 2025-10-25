@@ -23,9 +23,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "swagger:json": "node -e \"const { writeFileSync } = require('fs'); const { join } = require('path'); const { DocumentBuilder, SwaggerModule } = require('@nestjs/swagger'); const { AppModule } = require('./dist/app.module'); const { NestFactory } = require('@nestjs/core'); (async () => { const app = await NestFactory.create(AppModule); const config = new DocumentBuilder().setTitle('User Service API').setDescription('User service API documentation').setVersion('1.0').addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access-token').build(); const document = SwaggerModule.createDocument(app, config); writeFileSync(join(process.cwd(), 'swagger.json'), JSON.stringify(document)); await app.close(); })();\"",
-    "swagger:ui": "npm run swagger:json && npx serve -s swagger-static",
-    "prestart:prod": "npm run swagger:json"
+    "keycloak:setup-roles": "ts-node src/scripts/setup-keycloak-roles.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",

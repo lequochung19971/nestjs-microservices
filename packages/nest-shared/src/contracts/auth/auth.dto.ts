@@ -9,6 +9,14 @@ import {
 
 export class LoginDto {
   @ApiProperty({
+    description: 'Username for the account',
+    example: 'johndoe',
+  })
+  @IsNotEmpty()
+  @IsString()
+  username: string;
+
+  @ApiProperty({
     description: 'User password',
     example: 'password123',
     minLength: 8,
@@ -17,15 +25,6 @@ export class LoginDto {
   @IsString()
   @MinLength(8)
   password: string;
-
-  // username
-  @ApiProperty({
-    description: 'Username for the account',
-    example: 'johndoe',
-  })
-  @IsNotEmpty()
-  @IsString()
-  username: string;
 }
 
 export class RegisterDto {

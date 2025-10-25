@@ -9,6 +9,7 @@ import { VariantService } from './variant.service';
 import { StorageModule } from '../storage/storage.module';
 import { DrizzleModule } from '../../src/db/drizzle.module';
 import { DrizzleService } from '../../src/db/drizzle.service';
+import { MediaPublishers } from './media-publishers';
 
 @Module({
   imports: [StorageModule, DrizzleModule],
@@ -19,6 +20,7 @@ import { DrizzleService } from '../../src/db/drizzle.service';
     TagService,
     VariantService,
     DrizzleService,
+    MediaPublishers,
   ],
   exports: [MediaService, FolderService, TagService, VariantService],
 })

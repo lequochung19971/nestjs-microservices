@@ -93,19 +93,19 @@ export class ProductMediaResponseDto {
   @IsString()
   type: string;
 
-  @ApiPropertyOptional({
-    description: 'Image width in pixels',
-    example: 1920,
-  })
-  @IsOptional()
-  width?: number;
+  // @ApiPropertyOptional({
+  //   description: 'Image width in pixels',
+  //   example: 1920,
+  // })
+  // @IsOptional()
+  // width?: number;
 
-  @ApiPropertyOptional({
-    description: 'Image height in pixels',
-    example: 1080,
-  })
-  @IsOptional()
-  height?: number;
+  // @ApiPropertyOptional({
+  //   description: 'Image height in pixels',
+  //   example: 1080,
+  // })
+  // @IsOptional()
+  // height?: number;
 
   constructor(data: Partial<ProductMediaResponseDto>) {
     Object.assign(this, data);

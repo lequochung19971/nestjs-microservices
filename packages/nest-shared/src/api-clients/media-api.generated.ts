@@ -52,7 +52,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/upload": {
+    "/media/files/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -69,7 +69,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/upload/batch": {
+    "/media/files/upload/batch": {
         parameters: {
             query?: never;
             header?: never;
@@ -86,7 +86,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media": {
+    "/media/files": {
         parameters: {
             query?: never;
             header?: never;
@@ -103,7 +103,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/{id}": {
+    "/media/files/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -122,17 +122,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/media/ids": {
+    "/media/files/ids": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get media by IDs */
-        get: operations["MediaController_getMediaByIds"];
+        get?: never;
         put?: never;
-        post?: never;
+        /** Get media by IDs */
+        post: operations["MediaController_getMediaByIds"];
         delete?: never;
         options?: never;
         head?: never;
@@ -333,6 +333,8 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             };
+            /** @description Folder ID where the file should be stored */
+            folderId?: string;
         };
         /**
          * @description Type of media
@@ -420,6 +422,8 @@ export interface components {
             metadata?: {
                 [key: string]: unknown;
             };
+            /** @description Folder ID where the files should be stored */
+            folderId?: string;
         };
         PaginatedMediaResponseDto: {
             /** @description List of media items */

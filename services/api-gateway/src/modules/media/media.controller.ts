@@ -5,7 +5,6 @@ import {
   Get,
   Logger,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -17,28 +16,52 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Request } from 'express';
+import {
   BatchFileUploadDto,
+  DeleteMediaResponseDto,
   FileUploadDto,
   MediaQueryDto,
+  MediaResponseDto,
   MulterFile,
+  PaginatedMediaResponseDto,
   UpdateMediaDto,
 } from 'nest-shared/contracts';
+import { FormDataValidationPipe } from 'nest-shared/pipes';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { MediaService } from './media.service';
-import { Request } from 'express';
 
-@Controller('media')
+@ApiTags('media')
+@Controller('media/files')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('access-token')
 export class MediaController {
   private readonly logger = new Logger(MediaController.name);
 
   constructor(private readonly mediaService: MediaService) {}
 
   @Post('upload')
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: FileUploadDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Media file uploaded successfully',
+    type: MediaResponseDto,
+  })
   async uploadFile(
     @UploadedFile() file: MulterFile,
-    @Body() body: FileUploadDto,
+    @Body(new FormDataValidationPipe())
+    body: FileUploadDto,
     @Req() req: Request,
   ) {
     this.logger.log(`Uploading file: ${file.originalname}`);
@@ -46,11 +69,20 @@ export class MediaController {
   }
 
   @Post('upload/batch')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FilesInterceptor('files', 10))
+  @ApiOperation({ summary: 'Upload multiple media files' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: BatchFileUploadDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Media files uploaded successfully',
+    type: [MediaResponseDto],
+  })
+  @UseInterceptors(FilesInterceptor('files', 10)) // Max 10 files
   async uploadFiles(
-    @UploadedFiles() files: any[],
-    @Body() body: BatchFileUploadDto,
+    @UploadedFiles()
+    files: Array<MulterFile>,
+    @Body(new FormDataValidationPipe())
+    body: BatchFileUploadDto,
     @Req() req: Request,
   ) {
     this.logger.log(`Uploading ${files.length} files`);
@@ -58,26 +90,39 @@ export class MediaController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @ApiQuery({ type: MediaQueryDto })
+  @ApiResponse({
+    status: 200,
+    description: 'List of media files',
+    type: PaginatedMediaResponseDto,
+  })
   async getAllMedia(@Query() query: MediaQueryDto, @Req() req: Request) {
     this.logger.log('Getting all media files');
     return this.mediaService.getAllMedia(query, req.headers);
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  async getMediaById(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: Request,
-  ) {
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Media file by ID',
+    type: MediaResponseDto,
+  })
+  async getMediaById(@Param('id') id: string, @Req() req: Request) {
     this.logger.log(`Getting media with id: ${id}`);
     return this.mediaService.getMediaById(id, req.headers);
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: UpdateMediaDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Media file updated',
+    type: MediaResponseDto,
+  })
   async updateMedia(
-    @Param('id', ParseUUIDPipe) id: string,
+    @Param('id') id: string,
     @Body() updateData: UpdateMediaDto,
     @Req() req: Request,
   ) {
@@ -86,11 +131,13 @@ export class MediaController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  async deleteMedia(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Req() req: Request,
-  ) {
+  @ApiParam({ name: 'id', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Media file deleted',
+    type: DeleteMediaResponseDto,
+  })
+  async deleteMedia(@Param('id') id: string, @Req() req: Request) {
     this.logger.log(`Deleting media with id: ${id}`);
     return this.mediaService.deleteMedia(id, req.headers);
   }

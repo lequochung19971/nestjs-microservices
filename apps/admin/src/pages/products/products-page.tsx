@@ -1,7 +1,32 @@
-import { Package, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { ProductsTable } from "@/modules/products/components/products-table";
+import { CreateProductDialog } from "@/modules/products/components/create-product-dialog";
+import { EditProductDialog } from "@/modules/products/components/edit-product-dialog";
+import type { ApiSchema } from "@/http-clients";
+
+type ProductDto = ApiSchema["ProductDto"];
 
 export function ProductsPage() {
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null,
+  );
+
+  const handleCreateProduct = () => {
+    setCreateDialogOpen(true);
+  };
+
+  const handleEditProduct = (product: ProductDto) => {
+    setSelectedProductId(product.id);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+    setSelectedProductId(null);
+  };
+
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -9,25 +34,23 @@ export function ProductsPage() {
           <h2 className="text-2xl font-bold tracking-tight">Products</h2>
           <p className="text-muted-foreground">Manage your product catalog</p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4" />
-          Add Product
-        </Button>
       </div>
 
-      <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <Package className="h-12 w-12 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">No products found</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            You haven't added any products yet. Start by creating your first product.
-          </p>
-          <Button>
-            <Plus className="h-4 w-4" />
-            Add Product
-          </Button>
-        </div>
-      </div>
+      <ProductsTable
+        onCreateProduct={handleCreateProduct}
+        onEditProduct={handleEditProduct}
+      />
+
+      <CreateProductDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+      />
+
+      <EditProductDialog
+        productId={selectedProductId}
+        open={editDialogOpen}
+        onOpenChange={handleEditDialogClose}
+      />
     </div>
   );
 }

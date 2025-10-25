@@ -48,7 +48,6 @@ export class CreateProductDto {
     example: '2499.99',
   })
   @IsDecimal({ decimal_digits: '2' })
-  @Min(0, { message: 'Price must be positive' })
   price: string;
 
   @ApiProperty({

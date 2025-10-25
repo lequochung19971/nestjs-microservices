@@ -190,8 +190,11 @@ export const mediaFoldersRelations = relations(
     parent: one(mediaFolders, {
       fields: [mediaFolders.parentId],
       references: [mediaFolders.id],
+      relationName: 'folder_hierarchy',
     }),
-    children: many(mediaFolders),
+    children: many(mediaFolders, {
+      relationName: 'folder_hierarchy',
+    }),
     media: many(mediaToFolders),
   }),
 );

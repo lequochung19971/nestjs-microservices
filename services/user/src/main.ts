@@ -28,12 +28,13 @@ async function bootstrap() {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
+        name: 'Authorization',
+        description: 'Enter JWT token. Example: <token_value>',
         in: 'header',
       },
-      'access-token',
+      'access-token', // This identifier will be used in @ApiBearerAuth('access-token')
     )
+    .addSecurityRequirements('access-token') // Apply bearer auth to all endpoints by default
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

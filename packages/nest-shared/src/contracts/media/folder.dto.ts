@@ -23,7 +23,8 @@ export class CreateFolderDto {
 
   @ApiProperty({ description: 'ID of the folder owner' })
   @IsUUID()
-  ownerId: string;
+  @IsOptional()
+  ownerId?: string;
 }
 
 export class UpdateFolderDto {
@@ -43,13 +44,13 @@ export class UpdateFolderDto {
 
 export class FolderQueryDto {
   @ApiPropertyOptional({ description: 'ID of the parent folder' })
-  @IsUUID()
   @IsOptional()
+  @IsUUID()
   parentId?: string;
 
   @ApiPropertyOptional({ description: 'Search folders by name' })
-  @IsString()
   @IsOptional()
+  @IsString()
   search?: string;
 
   @ApiPropertyOptional({
@@ -69,7 +70,7 @@ export class FolderQueryDto {
   @IsNumber()
   @IsOptional()
   @Min(1)
-  @Max(100)
+  @Max(1000)
   @Type(() => Number)
   limit?: number;
 

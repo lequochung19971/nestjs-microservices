@@ -4,16 +4,27 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { and, eq, inArray, like, sql, SQL } from 'drizzle-orm';
+import { and, eq, inArray, like, sql, SQL, exists } from 'drizzle-orm';
 import { DrizzleService } from '../../src/db/drizzle.service';
-import { Media, media, MediaType } from '../../src/db/schema';
+import {
+  Media,
+  media,
+  mediaFolders,
+  mediaToFolders,
+  MediaVariant,
+} from '../../src/db/schema';
 import { StorageService } from '../storage/storage.service';
 import { VariantService } from './variant.service';
 import {
   CreateMediaDto,
+  FolderResponseDto,
   MediaQueryDto,
+  MediaResponseDto,
+  MediaType,
+  MediaVariantResponseDto,
   UpdateMediaDto,
 } from 'nest-shared/contracts';
+import { MediaPublishers } from './media-publishers';
 
 @Injectable()
 export class MediaService {
@@ -23,18 +34,20 @@ export class MediaService {
     private readonly storageService: StorageService,
     private readonly db: DrizzleService,
     private readonly variantService: VariantService,
+    private readonly mediaPublishers: MediaPublishers,
   ) {}
 
   /**
    * Upload and create a new media entry
    */
-  async create(createMediaDto: CreateMediaDto) {
+  async create(createMediaDto: CreateMediaDto): Promise<MediaResponseDto> {
     const {
       file,
       ownerId = crypto.randomUUID(),
       isPublic = false,
       metadata = {},
       path = '',
+      folderId,
     } = createMediaDto;
 
     try {
@@ -53,7 +66,7 @@ export class MediaService {
         path,
       });
 
-      this.db.client.transaction(async (tx) => {
+      return this.db.client.transaction(async (tx) => {
         // Create media record in database
         const [newMedia] = await tx
           .insert(media)
@@ -74,6 +87,40 @@ export class MediaService {
           .returning()
           .execute();
 
+        const folder = folderId
+          ? await tx.query.mediaFolders.findFirst({
+              where: eq(mediaFolders.id, folderId),
+            })
+          : undefined;
+
+        if (folder) {
+          await tx
+            .insert(mediaToFolders)
+            .values({
+              mediaId: newMedia.id,
+              folderId: folder.id,
+            })
+            .execute();
+        }
+
+        const newMediaResponse = new MediaResponseDto();
+        newMediaResponse.id = newMedia.id;
+        newMediaResponse.filename = newMedia.filename;
+        newMediaResponse.originalFilename = newMedia.originalFilename;
+        newMediaResponse.mimeType = newMedia.mimeType;
+        newMediaResponse.size = newMedia.size;
+        newMediaResponse.type = newMedia.type as MediaType;
+        newMediaResponse.provider = newMedia.provider;
+        newMediaResponse.path = newMedia.path;
+        newMediaResponse.url = newMedia.url;
+        newMediaResponse.status = newMedia.status;
+        newMediaResponse.ownerId = newMedia.ownerId;
+        newMediaResponse.isPublic = newMedia.isPublic;
+        newMediaResponse.metadata = newMedia.metadata
+          ? JSON.parse(newMedia.metadata)
+          : {};
+        newMediaResponse.folder = folder;
+
         // Generate variants for images
         if (file.mimetype.startsWith('image/')) {
           try {
@@ -84,17 +131,14 @@ export class MediaService {
               path,
             });
 
-            // Add variants to response
-            return {
-              ...newMedia,
-              variants,
-            };
+            newMediaResponse.variants = variants as MediaVariantResponseDto[];
           } catch (error) {
             this.logger.error(`Failed to generate variants: ${error.message}`);
             // Continue even if variant generation fails
           }
         }
-        return newMedia;
+
+        return newMediaResponse;
       });
     } catch (error) {
       this.logger.error(
@@ -164,7 +208,15 @@ export class MediaService {
    * List media with filtering and pagination
    */
   async findAll(query: MediaQueryDto) {
-    const { page = 1, limit = 20, type, search, tags, ownerId } = query;
+    const {
+      page = 1,
+      limit = 20,
+      type,
+      search,
+      tags,
+      ownerId,
+      folderId,
+    } = query;
 
     try {
       const offset = (page - 1) * limit;
@@ -184,34 +236,39 @@ export class MediaService {
         whereConditions.push(eq(media.ownerId, ownerId));
       }
 
-      // Execute query
-      let query;
-      if (whereConditions.length > 0) {
-        query = this.db.client
-          .select()
-          .from(media)
-          .where(and(...whereConditions))
-          .limit(limit)
-          .offset(offset)
-          .orderBy(media.createdAt);
-      } else {
-        query = this.db.client
-          .select()
-          .from(media)
-          .limit(limit)
-          .offset(offset)
-          .orderBy(media.createdAt);
+      // Handle folderId filtering using EXISTS subquery
+      if (folderId) {
+        whereConditions.push(
+          exists(
+            this.db.client
+              .select()
+              .from(mediaToFolders)
+              .where(
+                and(
+                  eq(mediaToFolders.mediaId, media.id),
+                  eq(mediaToFolders.folderId, folderId),
+                ),
+              ),
+          ),
+        );
       }
 
-      const items = await query;
+      // Execute query using the relational query API
+      const whereClause =
+        whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
+      const items = await this.db.client.query.media.findMany({
+        where: whereClause,
+        limit: limit,
+        offset: offset,
+        orderBy: (media, { asc }) => [asc(media.createdAt)],
+      });
 
       // Get total count for pagination
       const countResult = await this.db.client
         .select({ count: sql`count(*)` })
         .from(media)
-        .where(
-          whereConditions.length > 0 ? and(...whereConditions) : undefined,
-        );
+        .where(whereClause);
 
       const total = Number(countResult[0].count) || 0;
 
@@ -267,6 +324,15 @@ export class MediaService {
         .where(eq(media.id, id))
         .returning();
 
+      this.mediaPublishers.publishMediaUpdated({
+        id: updatedMedia.id,
+        originalFilename: updatedMedia.originalFilename,
+        mimeType: updatedMedia.mimeType,
+        size: updatedMedia.size,
+        type: updatedMedia.type as MediaType,
+        url: updatedMedia.url,
+      });
+
       return {
         ...updatedMedia,
         metadata: updatedMedia.metadata
@@ -311,6 +377,7 @@ export class MediaService {
 
       // Delete from database
       await this.db.client.delete(media).where(eq(media.id, id));
+      this.mediaPublishers.publishMediaDeleted(id);
 
       return { id, success: true };
     } catch (error) {
@@ -330,13 +397,13 @@ export class MediaService {
    */
   private getMediaTypeFromMimetype(mimetype: string): MediaType {
     if (mimetype.startsWith('image/')) {
-      return 'IMAGE';
+      return MediaType.IMAGE;
     } else if (mimetype.startsWith('video/')) {
-      return 'VIDEO';
+      return MediaType.VIDEO;
     } else if (mimetype.startsWith('audio/')) {
-      return 'AUDIO';
+      return MediaType.AUDIO;
     } else {
-      return 'DOCUMENT';
+      return MediaType.DOCUMENT;
     }
   }
 }

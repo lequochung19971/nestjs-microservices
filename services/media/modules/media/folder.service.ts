@@ -18,6 +18,7 @@ import {
   UpdateFolderDto,
   FolderQueryDto,
   MoveMediaToFolderDto,
+  PaginatedFolderResponseDto,
 } from 'nest-shared/contracts';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class FolderService {
    * Create a new folder
    */
   async create(createFolderDto: CreateFolderDto): Promise<MediaFolder> {
-    const { name, parentId, ownerId } = createFolderDto;
+    const { name, parentId = null, ownerId } = createFolderDto;
 
     try {
       // Check if folder with same name exists under the same parent
@@ -119,7 +120,7 @@ export class FolderService {
   /**
    * List folders with filtering and pagination
    */
-  async findAll(query: FolderQueryDto) {
+  async findAll(query: FolderQueryDto): Promise<PaginatedFolderResponseDto> {
     const { parentId, search, page = 1, limit = 20, ownerId } = query;
 
     try {
@@ -130,9 +131,6 @@ export class FolderService {
 
       if (parentId) {
         whereConditions.push(eq(mediaFolders.parentId, parentId));
-      } else {
-        // Root folders (null parentId) when not specified
-        whereConditions.push(isNull(mediaFolders.parentId));
       }
 
       if (search) {
@@ -155,10 +153,6 @@ export class FolderService {
         with: {
           // Include parent folder if exists
           parent: true,
-          // Include child folders
-          children: {
-            limit: 10, // Limit children for performance
-          },
         },
       });
 

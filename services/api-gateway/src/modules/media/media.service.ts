@@ -16,7 +16,9 @@ import {
   TagQueryDto,
   AddTagsToMediaDto,
   RemoveTagsFromMediaDto,
+  PaginatedFolderResponseDto,
 } from 'nest-shared/contracts';
+import { headersForwarding } from 'nest-shared/utils';
 
 @Injectable()
 export class MediaService {
@@ -28,16 +30,31 @@ export class MediaService {
   async uploadFile(
     file: MulterFile,
     body: FileUploadDto,
-    headers: Record<string, any> = {},
+    headers: Request['headers'],
   ) {
-    const response = await this.apiClient.media.POST('/media/upload', {
+    // Create proper forwarding headers for file upload
+    const forwardingHeaders =
+      headersForwarding.extractForwardingHeaders(headers);
+
+    const response = await this.apiClient.media.POST('/media/files/upload', {
       body: {
-        file,
+        file: file as unknown as string,
         isPublic: body.isPublic,
         path: body.path,
         metadata: body.metadata,
+        folderId: body.folderId,
       },
-      headers,
+      headers: forwardingHeaders,
+      bodySerializer: (body) => {
+        const formData = new FormData();
+        const blob = new Blob([file.buffer as any], { type: file.mimetype });
+        formData.append('file', blob, file.originalname);
+        formData.append('isPublic', body.isPublic?.toString() || 'false');
+        formData.append('path', body.path || '');
+        formData.append('metadata', JSON.stringify(body.metadata));
+        formData.append('folderId', body.folderId);
+        return formData;
+      },
     });
     return response.data;
   }
@@ -47,32 +64,65 @@ export class MediaService {
     body: BatchFileUploadDto,
     headers: Record<string, any> = {},
   ) {
-    const response = await this.apiClient.media.POST('/media/upload/batch', {
-      body: {
-        files,
-        isPublic: body.isPublic,
-        path: body.path,
-        metadata: body.metadata,
+    // Create proper forwarding headers
+    const forwardingHeaders =
+      headersForwarding.extractForwardingHeaders(headers);
+
+    const response = await this.apiClient.media.POST(
+      '/media/files/upload/batch',
+      {
+        body: {
+          files: files as unknown as string[],
+          isPublic: body.isPublic,
+          path: body.path,
+          metadata: body.metadata,
+          folderId: body.folderId,
+        },
+        bodySerializer: (body) => {
+          const formData = new FormData();
+          files.forEach((file) => {
+            const blob = new Blob([file.buffer as any], {
+              type: file.mimetype,
+            });
+            formData.append('files', blob, file.originalname);
+          });
+          formData.append('isPublic', body.isPublic.toString());
+          formData.append('path', body.path);
+          formData.append('metadata', JSON.stringify(body.metadata));
+          formData.append('folderId', body.folderId);
+          return formData;
+        },
+        headers: forwardingHeaders,
       },
-      headers,
-    });
+    );
     return response.data;
   }
   async getAllMedia(
     query: MediaQueryDto = {},
     headers: Record<string, any> = {},
   ) {
-    const response = await this.apiClient.media.GET('/media', {
+    const forwardingHeaders =
+      headersForwarding.extractForwardingHeaders(headers);
+
+    const response = await this.apiClient.media.GET('/media/files', {
       params: { query },
-      headers,
+      headers: forwardingHeaders,
     });
     return response.data;
   }
 
   async getMediaById(id: string, headers: Request['headers']) {
-    const response = await this.apiClient.media.GET('/media/{id}', {
-      params: { path: { id } },
+    const userInfo = headersForwarding.extractUserFromAuth(
+      headers.authorization,
+    );
+    const forwardingHeaders = headersForwarding.extractForwardingHeaders(
       headers,
+      userInfo?.userId,
+    );
+
+    const response = await this.apiClient.media.GET('/media/files/{id}', {
+      params: { path: { id } },
+      headers: forwardingHeaders,
     });
     return response.data;
   }
@@ -82,34 +132,57 @@ export class MediaService {
     data: UpdateMediaDto,
     headers: Request['headers'],
   ) {
-    const response = await this.apiClient.media.PUT('/media/{id}', {
+    const userInfo = headersForwarding.extractUserFromAuth(
+      headers.authorization,
+    );
+    const forwardingHeaders = headersForwarding.extractForwardingHeaders(
+      headers,
+      userInfo?.userId,
+    );
+
+    const response = await this.apiClient.media.PUT('/media/files/{id}', {
       params: { path: { id } },
       body: data,
-      headers,
+      headers: forwardingHeaders,
     });
     return response.data;
   }
 
   async deleteMedia(id: string, headers: Request['headers']) {
-    const response = await this.apiClient.media.DELETE('/media/{id}', {
-      params: { path: { id } },
+    const userInfo = headersForwarding.extractUserFromAuth(
+      headers.authorization,
+    );
+    const forwardingHeaders = headersForwarding.extractForwardingHeaders(
       headers,
+      userInfo?.userId,
+    );
+
+    const response = await this.apiClient.media.DELETE('/media/files/{id}', {
+      params: { path: { id } },
+      headers: forwardingHeaders,
     });
     return response.data;
   }
 
   // Folder operations
-  async getFolders(query: FolderQueryDto = {}, headers: Request['headers']) {
+  async getFolders(
+    query: FolderQueryDto = {},
+    headers: Request['headers'],
+  ): Promise<PaginatedFolderResponseDto> {
     const response = await this.apiClient.media.GET('/media/folders', {
       params: { query },
       headers,
     });
-    return response.data;
+    return response.data as unknown as PaginatedFolderResponseDto;
   }
 
   async createFolder(data: CreateFolderDto, headers: Request['headers']) {
     const response = await this.apiClient.media.POST('/media/folders', {
-      body: data,
+      body: {
+        name: data.name,
+        parentId: data.parentId,
+        ownerId: data.ownerId,
+      },
       headers,
     });
     return response.data;

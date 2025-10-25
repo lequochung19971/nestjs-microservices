@@ -1,18 +1,22 @@
 import { Module } from '@nestjs/common';
-import { JwtAuthModule, KeycloakModule } from 'nest-shared';
+import { JwtAuthModule, KeycloakModule, RolesGuard } from 'nest-shared';
 import { AppConfigModule } from './app-config/app-config.module';
 import { AppConfigService } from './app-config/app-config.service';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { DrizzleModule } from './db/drizzle.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Module({
   imports: [
     AppConfigModule,
     DrizzleModule,
     AuthModule,
+    AdminModule,
     JwtAuthModule.forRootAsync({
       useFactory: (appConfigService: AppConfigService) => {
         return {
@@ -38,6 +42,17 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [
+    AppService,
+    JwtStrategy,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule {}
