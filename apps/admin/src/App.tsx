@@ -15,6 +15,11 @@ import { CategoriesPage } from "./pages/categories/categories-page";
 import { MediaPage } from "./pages/media/media-page";
 import { OrdersPage } from "./pages/orders/orders-page";
 import { UsersPage } from "./pages/users/users-page";
+import { InventoryPage } from "./pages/inventory";
+import { WarehousesPage } from "./pages/inventory/warehouses";
+import { InventoryItemsPage } from "./pages/inventory/items";
+import { TransactionsPage } from "./pages/inventory/transactions";
+import { ReservationsPage } from "./pages/inventory/reservations";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
@@ -36,6 +41,23 @@ function App() {
                       <Route path="/media" element={<MediaPage />} />
                       <Route path="/orders" element={<OrdersPage />} />
                       <Route path="/users" element={<UsersPage />} />
+                      <Route path="/inventory" element={<InventoryPage />} />
+                      <Route
+                        path="/inventory/warehouses"
+                        element={<WarehousesPage />}
+                      />
+                      <Route
+                        path="/inventory/items"
+                        element={<InventoryItemsPage />}
+                      />
+                      <Route
+                        path="/inventory/transactions"
+                        element={<TransactionsPage />}
+                      />
+                      <Route
+                        path="/inventory/reservations"
+                        element={<ReservationsPage />}
+                      />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   </AppLayout>

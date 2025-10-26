@@ -16,6 +16,11 @@ export enum RoutingKey {
   PRODUCT_DELETED = 'product.deleted',
   MEDIA_DELETED = 'media.deleted',
   MEDIA_UPDATED = 'media.updated',
+  // Inventory events
+  INVENTORY_UPDATED = 'inventory.updated',
+  INVENTORY_LOW_STOCK = 'inventory.low_stock',
+  INVENTORY_RESERVED = 'inventory.reserved',
+  INVENTORY_RELEASED = 'inventory.released',
 }
 
 export interface RabbitMQModuleOptions {

@@ -1,6 +1,6 @@
 # Microservices Architecture
 
-A microservices-based application with API Gateway, User Service, Products Service, and Keycloak for authentication.
+A microservices-based application with API Gateway, User Service, Products Service, Media Service, and Keycloak for authentication. Includes Admin and Storefront applications.
 
 ## Architecture Overview
 
@@ -9,12 +9,17 @@ flowchart TD
     AG["API Gateway<br/>(Port 3000)<br/>• Route Proxy<br/>• Token Validation<br/>• Rate Limiting"] <--> KC["Keycloak<br/>(Port 8080)<br/>• Authentication<br/>• Authorization<br/>• Identity Mgmt"]
     AG <--> US["User Service<br/>(Port 3001)<br/>• User Profiles<br/>• Preferences<br/>• Business Logic"]
     AG <--> PS["Products Service<br/>(Port 3002)<br/>• Product Catalog<br/>• Categories<br/>• Product Images"]
-    KC <--> DB["PostgreSQL<br/>(Port 5432)<br/>• User Data<br/>• Keycloak Data<br/>• Product Data"]
+    AG <--> MS["Media Service<br/>(Port 3003)<br/>• File Storage<br/>• Media Management<br/>• Image Processing"]
+    KC <--> DB["PostgreSQL<br/>(Port 5432)<br/>• User Data<br/>• Keycloak Data<br/>• Product Data<br/>• Media Metadata"]
     US <--> DB
     PS <--> DB
+    MS <--> DB
     AG <--> SP["Shared Packages<br/>• Contracts<br/>• Auth<br/>• Common Code"]
     US <--> SP
     PS <--> SP
+    MS <--> SP
+    AA["Admin App<br/>(React)<br/>• Admin Interface<br/>• User Management<br/>• Content Management"] <--> AG
+    SA["Storefront App<br/>(React)<br/>• Customer Interface<br/>• Product Browsing<br/>• Shopping Experience"] <--> AG
 ```
 
 ## Services
@@ -27,7 +32,7 @@ flowchart TD
 
 ### User Service (`services/user`)
 
-- **Port**: 3002
+- **Port**: 3001
 - **Purpose**: Manage user profiles and preferences
 - **Features**: User profile CRUD, preferences management, Keycloak integration
 
@@ -36,6 +41,12 @@ flowchart TD
 - **Port**: 3002
 - **Purpose**: Manage product catalog and categories
 - **Features**: Product CRUD, hierarchical categories, product variants, multi-currency support
+
+### Media Service (`services/media`)
+
+- **Port**: 3003
+- **Purpose**: Manage media assets and file storage
+- **Features**: Image upload, processing, media management, secure storage
 
 ### Keycloak (`keycloak`)
 
@@ -77,8 +88,25 @@ docker compose -f docker compose.dev.yml up -d
 - API Gateway: [http://localhost:3000](http://localhost:3000)
 - User Service: [http://localhost:3001](http://localhost:3001)
 - Products Service: [http://localhost:3002](http://localhost:3002)
+- Media Service: [http://localhost:3003](http://localhost:3003)
 - Keycloak: [http://localhost:8080](http://localhost:8080)
 - PostgreSQL: localhost:5432
+- Admin App: [http://localhost:4000](http://localhost:4000)
+- Storefront: [http://localhost:4001](http://localhost:4001)
+
+## Front-end Applications
+
+### Admin App (`apps/admin`)
+
+- **Technology**: React with Vite
+- **Purpose**: Administration interface
+- **Features**: User management, product catalog management, media management
+
+### Storefront App (`apps/storefront`)
+
+- **Technology**: React
+- **Purpose**: Customer-facing e-commerce interface
+- **Features**: Product browsing, shopping experience, user account management
 
 ## API Endpoints
 
@@ -129,6 +157,22 @@ pnpm dev
 # Products Service
 cd services/products
 pnpm dev
+
+# Media Service
+cd services/media
+pnpm dev
+```
+
+### Front-end Development
+
+```bash
+# Admin App
+cd apps/admin
+pnpm dev
+
+# Storefront App
+cd apps/storefront
+pnpm dev
 ```
 
 ### Database Migrations
@@ -146,6 +190,13 @@ cd services/products
 pnpm db:generate
 
 # Apply migrations (Products Service)
+pnpm db:push
+
+# Generate migrations (Media Service)
+cd services/media
+pnpm db:generate
+
+# Apply migrations (Media Service)
 pnpm db:push
 ```
 
@@ -186,12 +237,43 @@ KEYCLOAK_CLIENT_SECRET=your-client-secret
 PORT=3002
 ```
 
+### Media Service
+
+```env
+DATABASE_URL=postgresql://media_user:media_password@postgres:5432/media_db
+KEYCLOAK_URL=http://keycloak:8080
+KEYCLOAK_REALM=master
+KEYCLOAK_CLIENT_ID=media-service
+KEYCLOAK_CLIENT_SECRET=your-client-secret
+PORT=3003
+STORAGE_PATH=/app/uploads
+```
+
 ### API Gateway
 
 ```env
 USER_SERVICE_URL=http://user:3001
 PRODUCTS_SERVICE_URL=http://products:3002
+MEDIA_SERVICE_URL=http://media:3003
 KEYCLOAK_URL=http://keycloak:8080
+```
+
+### Admin App
+
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_AUTH_URL=http://localhost:8080
+VITE_AUTH_REALM=master
+VITE_AUTH_CLIENT_ID=admin-app
+```
+
+### Storefront App
+
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_AUTH_URL=http://localhost:8080
+VITE_AUTH_REALM=master
+VITE_AUTH_CLIENT_ID=storefront-app
 ```
 
 ## Architecture Benefits
@@ -201,7 +283,10 @@ KEYCLOAK_URL=http://keycloak:8080
 - **Keycloak**: Handles authentication and authorization
 - **User Service**: Manages user profiles and preferences
 - **Products Service**: Manages product catalog and categories
+- **Media Service**: Manages media files and storage
 - **API Gateway**: Routes requests and handles cross-cutting concerns
+- **Admin App**: Provides administration interface
+- **Storefront App**: Provides customer-facing interface
 - **Shared Packages**: Common code and contracts between services
 
 ### Scalability
@@ -217,6 +302,25 @@ KEYCLOAK_URL=http://keycloak:8080
 - Easy to add new features
 
 ## Recent Changes
+
+### Media Service Addition
+
+A new Media service was added to handle media files and storage:
+
+**Features**:
+
+- Secure file upload and storage
+- Image processing and optimization
+- Media metadata management
+- Integration with product images
+- Access control for media assets
+
+**Benefits**:
+
+- Centralized media management
+- Separation of media concerns from other services
+- Optimized handling of binary data
+- Scalable architecture for growing media needs
 
 ### Products Service Addition
 
@@ -236,6 +340,23 @@ A new Products service was added to handle product catalog management:
 - Clear separation of product data from user data
 - Optimized data schema for e-commerce use cases
 - Scalable architecture for growing product catalogs
+
+### Front-end Applications Addition
+
+Two new front-end applications were added:
+
+**Admin App**:
+
+- React-based administrative interface
+- User management interface
+- Product catalog management
+- Media library management
+
+**Storefront App**:
+
+- Customer-facing e-commerce interface
+- Product browsing experience
+- User account management
 
 ### Auth → User Service Transformation
 

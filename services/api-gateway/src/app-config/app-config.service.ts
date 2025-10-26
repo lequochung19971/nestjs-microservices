@@ -59,6 +59,12 @@ export class AppConfigService {
     };
   }
 
+  get inventoryService() {
+    return {
+      serviceUrl: process.env.INVENTORY_SERVICE_URL,
+    };
+  }
+
   get throttle() {
     return {
       ttl: parseInt(process.env.THROTTLE_TTL || '60', 10),

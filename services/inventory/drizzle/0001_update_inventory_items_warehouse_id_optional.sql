@@ -1,0 +1,1 @@
+ALTER TABLE "inventory_items" ALTER COLUMN "warehouse_id" DROP NOT NULL;

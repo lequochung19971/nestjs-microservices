@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -33,6 +34,7 @@ import {
 } from 'nest-shared/contracts';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { ProductsService } from './products.service';
+import { Request } from 'express';
 
 @ApiTags('products')
 @Controller('products')
@@ -60,8 +62,9 @@ export class ProductsController {
   })
   async create(
     @Body() createProductDto: CreateProductDto,
+    @Req() req: Request,
   ): Promise<ProductDto> {
-    return this.productsService.create(createProductDto);
+    return this.productsService.create(createProductDto, req.headers);
   }
 
   @Get()
@@ -240,8 +243,9 @@ export class ProductsController {
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
+    @Req() req: Request,
   ): Promise<ProductDto> {
-    return this.productsService.update(id, updateProductDto);
+    return this.productsService.update(id, updateProductDto, req.headers);
   }
 
   @Delete(':id')
@@ -378,8 +382,13 @@ export class ProductsController {
   async attachMedia(
     @Param('id', ParseUUIDPipe) productId: string,
     @Body() attachMediaDto: AttachMediaToProductDto,
+    @Req() req: Request,
   ): Promise<ProductMediaResponseDto> {
-    return this.productsService.attachMedia(productId, attachMediaDto);
+    return this.productsService.attachMedia(
+      productId,
+      attachMediaDto,
+      req.headers,
+    );
   }
 
   @Get(':id/media')

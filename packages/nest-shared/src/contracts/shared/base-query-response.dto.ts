@@ -1,4 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { applyDecorators, Type } from '@nestjs/common';
+import {
+  ApiExtraModels,
+  ApiOkResponse,
+  ApiProperty,
+  ApiResponse,
+  ApiResponseOptions,
+  ApiSchema,
+  getSchemaPath,
+} from '@nestjs/swagger';
 
 export class PaginationMeta {
   @ApiProperty({
@@ -66,3 +75,46 @@ export class BaseQueryResponse<T> {
     });
   }
 }
+
+export const ApiQueryResponse = <TModel extends Type<any>>(
+  model: TModel,
+  options?: ApiResponseOptions,
+) => {
+  const finalName = model.name.toLowerCase().includes('dto')
+    ? `${model.name.replace(/dto/gi, '')}QueryResponse`
+    : `${model.name}QueryResponse`;
+
+  @ApiSchema({ name: finalName })
+  class CustomQueryResponse extends BaseQueryResponse<TModel> {
+    @ApiProperty({
+      description: 'List of items',
+      isArray: true,
+      type: model,
+    })
+    data: TModel[];
+  }
+
+  // 2. Return the combined Swagger decorators
+  return applyDecorators(
+    // Ensure all base models are available
+    ApiExtraModels(CustomQueryResponse, PaginationMeta, model),
+
+    ApiResponse({
+      ...options,
+      schema: {
+        allOf: [
+          // Use the dynamic class's generated schema path
+          { $ref: getSchemaPath(CustomQueryResponse) },
+          {
+            properties: {
+              data: {
+                type: 'array',
+                items: { $ref: getSchemaPath(model) },
+              },
+            },
+          },
+        ],
+      },
+    }),
+  );
+};

@@ -18,6 +18,7 @@ import { ProductsModule } from './modules/products';
 import { CategoriesModule } from './modules/categories';
 import { MediaModule } from './modules/media';
 import { AdminModule } from './modules/admin/admin.module';
+import { InventoryModule } from './modules/inventory';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { AdminModule } from './modules/admin/admin.module';
     CategoriesModule,
     MediaModule,
     AdminModule,
+    InventoryModule,
   ],
   controllers: [AppController],
   providers: [

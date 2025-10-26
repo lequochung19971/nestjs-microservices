@@ -20,10 +20,6 @@ async function bootstrap() {
     .setTitle('Products Service API')
     .setDescription('The Products service API documentation')
     .setVersion('1.0')
-    .addTag('products', 'Product management endpoints')
-    .addTag('categories', 'Category management endpoints')
-    .addTag('variants', 'Product variant endpoints')
-    .addTag('admin', 'Admin-only endpoints')
     .addBearerAuth(
       {
         type: 'http',

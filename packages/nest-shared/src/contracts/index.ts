@@ -5,3 +5,4 @@ export * from './shared';
 export * from './media';
 export * from './products';
 export * from './admin';
+export * from './inventory';

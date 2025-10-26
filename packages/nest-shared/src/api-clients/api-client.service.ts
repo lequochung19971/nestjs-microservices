@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { paths as MediaPaths } from './media-api.generated';
 import { paths as ProductsPaths } from './products-api.generated';
+import { paths as InventoryPaths } from './inventory-api.generated';
 import { paths as UsersPaths } from './users-api.generated';
 import createClient, { Client, FetchResponse } from 'openapi-fetch';
 
@@ -19,6 +20,9 @@ const serviceConfigs = {
   },
   media: {
     url: 'http://localhost:3003',
+  },
+  inventory: {
+    url: 'http://localhost:3004',
   },
 };
 
@@ -33,12 +37,13 @@ export class ApiClientService {
   public readonly users: ReturnType<typeof createClient<UsersPaths>>;
   public readonly products: ReturnType<typeof createClient<ProductsPaths>>;
   public readonly media: ReturnType<typeof createClient<MediaPaths>>;
-
+  public readonly inventory: ReturnType<typeof createClient<InventoryPaths>>;
   constructor() {
     // Get service URLs from configuration
     const userServiceUrl = serviceConfigs.users.url;
     const productsServiceUrl = serviceConfigs.products.url;
     const mediaServiceUrl = serviceConfigs.media.url;
+    const inventoryServiceUrl = serviceConfigs.inventory.url;
     // Create typed clients
     this.users = this.withCall(
       createClient<UsersPaths>({
@@ -59,6 +64,13 @@ export class ApiClientService {
         baseUrl: mediaServiceUrl,
       }),
       'media',
+    );
+
+    this.inventory = this.withCall(
+      createClient<InventoryPaths>({
+        baseUrl: inventoryServiceUrl,
+      }),
+      'inventory',
     );
   }
 

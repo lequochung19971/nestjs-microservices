@@ -8,40 +8,79 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { Package, FolderTree, Images, ShoppingCart, Users, LayoutDashboard } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+} from "@/components/ui/sidebar";
+import {
+  Package,
+  FolderTree,
+  Images,
+  ShoppingCart,
+  Users,
+  LayoutDashboard,
+  Warehouse,
+  BoxesIcon,
+  History,
+  CalendarClock,
+} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
-const navigationItems = [
+const mainItems = [
   {
-    title: 'Dashboard',
-    url: '/',
+    title: "Dashboard",
+    url: "/",
     icon: LayoutDashboard,
   },
   {
-    title: 'Products',
-    url: '/products',
+    title: "Products",
+    url: "/products",
     icon: Package,
   },
   {
-    title: 'Categories',
-    url: '/categories',
+    title: "Categories",
+    url: "/categories",
     icon: FolderTree,
   },
   {
-    title: 'Media',
-    url: '/media',
+    title: "Media",
+    url: "/media",
     icon: Images,
   },
   {
-    title: 'Orders',
-    url: '/orders',
+    title: "Orders",
+    url: "/orders",
     icon: ShoppingCart,
   },
   {
-    title: 'Users',
-    url: '/users',
+    title: "Users",
+    url: "/users",
     icon: Users,
+  },
+];
+
+const inventoryItems = [
+  {
+    title: "Overview",
+    url: "/inventory",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Warehouses",
+    url: "/inventory/warehouses",
+    icon: Warehouse,
+  },
+  {
+    title: "Inventory Items",
+    url: "/inventory/items",
+    icon: BoxesIcon,
+  },
+  {
+    title: "Transactions",
+    url: "/inventory/transactions",
+    icon: History,
+  },
+  {
+    title: "Reservations",
+    url: "/inventory/reservations",
+    icon: CalendarClock,
   },
 ];
 
@@ -63,12 +102,39 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navigationItems.map((item) => (
+              {mainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={location.pathname === item.url}
+                  >
+                    <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Inventory</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {inventoryItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={
+                      location.pathname === item.url ||
+                      location.pathname.startsWith(`${item.url}/`)
+                    }
+                  >
                     <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>

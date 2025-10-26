@@ -5,6 +5,11 @@ import {
   RabbitMQService,
   RoutingKey,
 } from 'nest-shared/rabbitmq';
+import {
+  ProductCreatedEvent,
+  ProductDeletedEvent,
+  ProductUpdatedEvent,
+} from 'nest-shared/events';
 
 @Injectable()
 export class ProductsPublishers extends BaseMessagingService {
@@ -27,16 +32,12 @@ export class ProductsPublishers extends BaseMessagingService {
   /**
    * Publish an event when a product is created
    */
-  async publishProductCreated(productData: any) {
+  publishProductCreated(productData: ProductCreatedEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.PRODUCT_CREATED,
-        {
-          id: productData.id,
-          name: productData.name,
-          timestamp: new Date().toISOString(),
-        },
+        productData,
       );
 
       this.logger.log(
@@ -54,16 +55,12 @@ export class ProductsPublishers extends BaseMessagingService {
   /**
    * Publish an event when a product is updated
    */
-  async publishProductUpdated(productData: any) {
+  publishProductUpdated(productData: ProductUpdatedEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.PRODUCT_UPDATED,
-        {
-          id: productData.id,
-          name: productData.name,
-          timestamp: new Date().toISOString(),
-        },
+        productData,
       );
 
       this.logger.log(
@@ -81,23 +78,20 @@ export class ProductsPublishers extends BaseMessagingService {
   /**
    * Publish an event when a product is deleted
    */
-  async publishProductDeleted(productId: string) {
+  publishProductDeleted(productData: ProductDeletedEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.PRODUCT_DELETED,
-        {
-          id: productId,
-          timestamp: new Date().toISOString(),
-        },
+        productData,
       );
 
       this.logger.log(
-        `Product deleted event published for product ID: ${productId}`,
+        `Product deleted event published for product ID: ${productData.id}`,
       );
     } catch (error) {
       this.logger.error(
-        `Failed to publish product deleted event for product ID: ${productId}`,
+        `Failed to publish product deleted event for product ID: ${productData.id}`,
         error,
       );
       throw error;

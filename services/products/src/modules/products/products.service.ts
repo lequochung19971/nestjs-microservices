@@ -36,6 +36,12 @@ import {
   products,
   productVariants,
 } from '../../db/schema';
+import {
+  ProductCreatedEvent,
+  ProductDeletedEvent,
+  ProductUpdatedEvent,
+} from 'nest-shared/events';
+import { ProductsPublishers } from './products-publishers';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
@@ -44,6 +50,7 @@ export class ProductsService implements OnModuleInit {
   constructor(
     private readonly drizzle: DrizzleService,
     private readonly apiClientService: ApiClientService,
+    private readonly productsPublishers: ProductsPublishers,
   ) {}
 
   async onModuleInit() {
@@ -52,7 +59,10 @@ export class ProductsService implements OnModuleInit {
 
   // Core CRUD Operations
 
-  async create(dto: CreateProductDto): Promise<ProductDto> {
+  async create(
+    dto: CreateProductDto,
+    headers: Request['headers'],
+  ): Promise<ProductDto> {
     try {
       // Check if SKU already exists
       const existingProduct =
@@ -110,9 +120,7 @@ export class ProductsService implements OnModuleInit {
               body: {
                 ids: dto.imageIds,
               },
-              // headers: headersForwarding.extractForwardingHeaders(
-              //   // this.request.headers,
-              // ),
+              headers: headersForwarding.extractForwardingHeaders(headers),
             },
           );
 
@@ -135,6 +143,15 @@ export class ProductsService implements OnModuleInit {
 
         return newProduct;
       });
+
+      this.productsPublishers.publishProductCreated(
+        new ProductCreatedEvent({
+          id: result.id,
+          name: result.name,
+          sku: result.sku,
+          isActive: result.isActive,
+        }),
+      );
 
       return this.findOne(result.id);
     } catch (error) {
@@ -357,7 +374,11 @@ export class ProductsService implements OnModuleInit {
     }
   }
 
-  async update(id: string, dto: UpdateProductDto): Promise<ProductDto> {
+  async update(
+    id: string,
+    dto: UpdateProductDto,
+    headers: Request['headers'],
+  ): Promise<ProductDto> {
     try {
       // Check if product exists
       const existingProduct = await this.findOne(id);
@@ -422,9 +443,7 @@ export class ProductsService implements OnModuleInit {
               body: {
                 ids: dto.imageIds,
               },
-              // headers: headersForwarding.extractForwardingHeaders(
-              //   this.request.headers,
-              // ),
+              headers: headersForwarding.extractForwardingHeaders(headers),
             },
           );
           const newProductImages = images.data.map(
@@ -444,6 +463,14 @@ export class ProductsService implements OnModuleInit {
         }
       });
 
+      this.productsPublishers.publishProductUpdated(
+        new ProductUpdatedEvent({
+          id: id,
+          name: dto.name,
+          sku: dto.sku,
+          isActive: dto.isActive,
+        }),
+      );
       return this.findOne(id);
     } catch (error) {
       if (
@@ -541,6 +568,12 @@ export class ProductsService implements OnModuleInit {
         // Delete the product
         await tx.delete(products).where(eq(products.id, id));
       });
+
+      this.productsPublishers.publishProductDeleted(
+        new ProductDeletedEvent({
+          id: id,
+        }),
+      );
 
       return product;
     } catch (error) {
@@ -771,6 +804,7 @@ export class ProductsService implements OnModuleInit {
   async attachMedia(
     productId: string,
     dto: AttachMediaToProductDto,
+    headers: Request['headers'],
   ): Promise<ProductMediaResponseDto> {
     try {
       // Ensure product exists
@@ -797,9 +831,7 @@ export class ProductsService implements OnModuleInit {
             id: dto.mediaId,
           },
         },
-        // headers: headersForwarding.extractForwardingHeaders(
-        //   this.request.headers,
-        // ),
+        headers: headersForwarding.extractForwardingHeaders(headers),
       });
 
       // TODO: In a real implementation, you would fetch media details from the media service

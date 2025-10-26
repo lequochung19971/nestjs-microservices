@@ -1,36 +1,44 @@
-import { LayoutDashboard, Package, FolderTree, Images, ShoppingCart, Users } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Package,
+  FolderTree,
+  Images,
+  ShoppingCart,
+  Users,
+} from "lucide-react";
+import { InventoryWidget } from "@/modules/inventory/components";
 
 export function DashboardPage() {
   const stats = [
     {
-      title: 'Products',
-      value: '0',
+      title: "Products",
+      value: "0",
       icon: Package,
-      description: 'Total products in catalog',
+      description: "Total products in catalog",
     },
     {
-      title: 'Categories',
-      value: '0',
+      title: "Categories",
+      value: "0",
       icon: FolderTree,
-      description: 'Product categories',
+      description: "Product categories",
     },
     {
-      title: 'Media Files',
-      value: '0',
+      title: "Media Files",
+      value: "0",
       icon: Images,
-      description: 'Uploaded media assets',
+      description: "Uploaded media assets",
     },
     {
-      title: 'Orders',
-      value: '0',
+      title: "Orders",
+      value: "0",
       icon: ShoppingCart,
-      description: 'Customer orders',
+      description: "Customer orders",
     },
     {
-      title: 'Users',
-      value: '0',
+      title: "Users",
+      value: "0",
       icon: Users,
-      description: 'Registered users',
+      description: "Registered users",
     },
   ];
 
@@ -38,7 +46,9 @@ export function DashboardPage() {
     <div className="flex flex-1 flex-col gap-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">Welcome to your ecommerce admin panel</p>
+        <p className="text-muted-foreground">
+          Welcome to your ecommerce admin panel
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -50,20 +60,16 @@ export function DashboardPage() {
             </div>
             <div className="mt-2">
               <p className="text-3xl font-bold">{stat.value}</p>
-              <p className="text-sm text-muted-foreground">{stat.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {stat.description}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed">
-        <div className="flex flex-col items-center gap-1 text-center">
-          <LayoutDashboard className="h-12 w-12 text-muted-foreground" />
-          <h3 className="text-xl font-semibold">Welcome to your Admin Panel</h3>
-          <p className="text-sm text-muted-foreground">
-            Start by creating your first product or category to get going.
-          </p>
-        </div>
+      <div className="rounded-lg border p-6">
+        <InventoryWidget />
       </div>
     </div>
   );

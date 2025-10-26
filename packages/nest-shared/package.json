@@ -53,6 +53,11 @@
       "require": "./dist/api-clients/media-api.generated.js",
       "types": "./dist/api-clients/media-api.generated.d.ts"
     },
+    "./api-clients/inventory": {
+      "default": "./dist/api-clients/inventory-api.generated.js",
+      "require": "./dist/api-clients/inventory-api.generated.js",
+      "types": "./dist/api-clients/inventory-api.generated.d.ts"
+    },
     "./api-clients/api-client.service": {
       "default": "./dist/api-clients/api-client.service.js",
       "require": "./dist/api-clients/api-client.service.js",
@@ -89,10 +94,11 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "openapi": "npm run openapi:user && npm run openapi:products && npm run openapi:media",
+    "openapi": "npm run openapi:user && npm run openapi:products && npm run openapi:media && npm run openapi:inventory",
     "openapi:user": "openapi-typescript http://localhost:3001/api/docs/json --output src/api-clients/users-api.generated.ts",
     "openapi:products": "openapi-typescript http://localhost:3002/api/docs/json --output src/api-clients/products-api.generated.ts",
-    "openapi:media": "openapi-typescript http://localhost:3003/api/docs/json --output src/api-clients/media-api.generated.ts"
+    "openapi:media": "openapi-typescript http://localhost:3003/api/docs/json --output src/api-clients/media-api.generated.ts",
+    "openapi:inventory": "openapi-typescript http://localhost:3004/api/docs/json --output src/api-clients/inventory-api.generated.ts"
   },
   "dependencies": {
     "@nestjs/mapped-types": "^2.1.0",
