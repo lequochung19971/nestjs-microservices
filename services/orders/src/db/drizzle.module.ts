@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 import db from '.';
-import { DrizzleService } from '../../src/db/drizzle.service';
+import { DrizzleService } from './drizzle.service';
 import { DRIZZLE_PROVIDER } from './constants';
 
 @Global()
@@ -14,6 +14,6 @@ import { DRIZZLE_PROVIDER } from './constants';
       useValue: db,
     },
   ],
-  exports: [DRIZZLE_PROVIDER, DrizzleService],
+  exports: [DrizzleService, DRIZZLE_PROVIDER],
 })
 export class DrizzleModule {}

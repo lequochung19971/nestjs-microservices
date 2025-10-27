@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
-import { MediaController } from './media.controller';
-import { MediaService } from './media.service';
+import { DrizzleService } from '../../src/db/drizzle.service';
+import { StorageModule } from '../storage/storage.module';
 import { FolderController } from './folder.controller';
 import { FolderService } from './folder.service';
+import { MediaPublishers } from './media-publishers';
+import { MediaController } from './media.controller';
+import { MediaService } from './media.service';
 import { TagController } from './tag.controller';
 import { TagService } from './tag.service';
 import { VariantService } from './variant.service';
-import { StorageModule } from '../storage/storage.module';
-import { DrizzleModule } from '../../src/db/drizzle.module';
-import { DrizzleService } from '../../src/db/drizzle.service';
-import { MediaPublishers } from './media-publishers';
 
 @Module({
-  imports: [StorageModule, DrizzleModule],
+  imports: [StorageModule],
   controllers: [MediaController, FolderController, TagController],
   providers: [
     MediaService,

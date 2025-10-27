@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { DrizzleModule } from '../../db/drizzle.module';
+import { DrizzleService } from 'src/db/drizzle.service';
 import CategoriesController from './categories.controller';
 import CategoriesService from './categories.service';
-import { DrizzleService } from 'src/db/drizzle.service';
 
 @Module({
-  imports: [DrizzleModule],
+  imports: [],
   controllers: [CategoriesController],
   providers: [CategoriesService, DrizzleService],
   exports: [CategoriesService],
