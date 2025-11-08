@@ -9,6 +9,7 @@ import { paths as MediaPaths } from './media-api.generated';
 import { paths as ProductsPaths } from './products-api.generated';
 import { paths as InventoryPaths } from './inventory-api.generated';
 import { paths as UsersPaths } from './users-api.generated';
+import { paths as OrdersPaths } from './orders-api.generated';
 import createClient, { Client, FetchResponse } from 'openapi-fetch';
 
 const serviceConfigs = {
@@ -24,6 +25,9 @@ const serviceConfigs = {
   inventory: {
     url: 'http://localhost:3004',
   },
+  orders: {
+    url: 'http://localhost:3005',
+  },
 };
 
 /**
@@ -38,12 +42,14 @@ export class ApiClientService {
   public readonly products: ReturnType<typeof createClient<ProductsPaths>>;
   public readonly media: ReturnType<typeof createClient<MediaPaths>>;
   public readonly inventory: ReturnType<typeof createClient<InventoryPaths>>;
+  public readonly orders: ReturnType<typeof createClient<OrdersPaths>>;
   constructor() {
     // Get service URLs from configuration
     const userServiceUrl = serviceConfigs.users.url;
     const productsServiceUrl = serviceConfigs.products.url;
     const mediaServiceUrl = serviceConfigs.media.url;
     const inventoryServiceUrl = serviceConfigs.inventory.url;
+    const ordersServiceUrl = serviceConfigs.orders.url;
     // Create typed clients
     this.users = this.withCall(
       createClient<UsersPaths>({
@@ -71,6 +77,13 @@ export class ApiClientService {
         baseUrl: inventoryServiceUrl,
       }),
       'inventory',
+    );
+
+    this.orders = this.withCall(
+      createClient<OrdersPaths>({
+        baseUrl: ordersServiceUrl,
+      }),
+      'orders',
     );
   }
 

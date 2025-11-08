@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DrizzleModule } from './db/drizzle.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { OrdersModule } from './modules/orders/orders.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       },
       global: true,
     }),
+    OrdersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

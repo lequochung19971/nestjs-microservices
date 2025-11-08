@@ -49,6 +49,16 @@ export const shippingMethodEnum = pgEnum('shipping_method', [
   'PICKUP',
 ]);
 
+// Currency enum for better type safety
+export const currencyEnum = pgEnum('currency', [
+  'USD',
+  'EUR',
+  'GBP',
+  'JPY',
+  'CAD',
+  'AUD',
+]);
+
 // Orders table - Main order information
 export const orders = pgTable(
   'orders',
@@ -98,9 +108,9 @@ export const orderItems = pgTable(
     orderId: uuid('order_id')
       .notNull()
       .references(() => orders.id, { onDelete: 'cascade' }),
-    productId: uuid('product_id').notNull(), // Reference to product service
-    sku: varchar('sku', { length: 100 }).notNull(),
-    productName: varchar('product_name', { length: 255 }).notNull(),
+    orderProductId: uuid('order_product_id')
+      .notNull()
+      .references(() => orderProducts.id, { onDelete: 'cascade' }),
     quantity: integer('quantity').notNull(),
     unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(),
     totalPrice: decimal('total_price', { precision: 10, scale: 2 }).notNull(),
@@ -111,11 +121,27 @@ export const orderItems = pgTable(
       .notNull()
       .default('0'),
     inventoryReservationId: uuid('inventory_reservation_id'), // Reference to inventory reservation
-    metadata: text('metadata'), // JSON for additional product details
+  },
+  (table) => [index('order_items_order_idx').on(table.orderId)],
+);
+
+export const orderProducts = pgTable(
+  'order_products',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    orderId: uuid('order_id')
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+    productId: uuid('product_id').notNull(), // Reference to product service
+    sku: varchar('sku', { length: 100 }).notNull(),
+    name: varchar('name', { length: 255 }).notNull(),
+    description: text('description'),
+    price: decimal('price', { precision: 10, scale: 2 }).notNull(),
+    currency: currencyEnum('currency').notNull().default('USD'),
   },
   (table) => [
-    index('order_items_order_idx').on(table.orderId),
-    index('order_items_product_idx').on(table.productId),
+    index('order_products_order_idx').on(table.orderId),
+    index('order_products_product_idx').on(table.productId),
   ],
 );
 
@@ -238,6 +264,17 @@ export const ordersRelations = relations(orders, ({ many, one }) => ({
 export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   order: one(orders, {
     fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(orderProducts, {
+    fields: [orderItems.orderProductId],
+    references: [orderProducts.id],
+  }),
+}));
+
+export const orderProductsRelations = relations(orderProducts, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderProducts.orderId],
     references: [orders.id],
   }),
 }));

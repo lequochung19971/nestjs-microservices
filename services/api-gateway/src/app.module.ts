@@ -19,6 +19,8 @@ import { CategoriesModule } from './modules/categories';
 import { MediaModule } from './modules/media';
 import { AdminModule } from './modules/admin/admin.module';
 import { InventoryModule } from './modules/inventory';
+import { OrdersModule } from './modules/orders';
+import { PaymentsModule } from './modules/payments';
 
 @Module({
   imports: [
@@ -60,6 +62,8 @@ import { InventoryModule } from './modules/inventory';
     MediaModule,
     AdminModule,
     InventoryModule,
+    OrdersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

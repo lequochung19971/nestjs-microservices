@@ -111,6 +111,28 @@ services:
       timeout: 5s
       retries: 5
 
+  # PostgreSQL Database for Orders Service
+  postgres-orders:
+    image: postgres:15-alpine
+    container_name: microservices-postgres-orders-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: orders_db
+      POSTGRES_USER: orders_user # [service_name]_user
+      POSTGRES_PASSWORD: orders_password
+    ports:
+      - '5437:5432'
+    volumes:
+      - postgres_orders_data_dev:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-network-dev
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U orders_user -d orders_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # MinIO Object Storage Service
   minio:
     image: minio/minio:latest
@@ -292,6 +314,8 @@ volumes:
   postgres_keycloak_data_dev:
     driver: local
   postgres_inventory_data_dev:
+    driver: local
+  postgres_orders_data_dev:
     driver: local
   minio_data_dev:
     driver: local
