@@ -14,6 +14,7 @@ import { ProductsPage } from "./pages/products/products-page";
 import { CategoriesPage } from "./pages/categories/categories-page";
 import { MediaPage } from "./pages/media/media-page";
 import { OrdersPage } from "./pages/orders/orders-page";
+import { CustomersPage } from "./pages/customers/customers-page";
 import { UsersPage } from "./pages/users/users-page";
 import { InventoryPage } from "./pages/inventory";
 import { WarehousesPage } from "./pages/inventory/warehouses";
@@ -40,6 +41,7 @@ function App() {
                       <Route path="/categories" element={<CategoriesPage />} />
                       <Route path="/media" element={<MediaPage />} />
                       <Route path="/orders" element={<OrdersPage />} />
+                      <Route path="/customers" element={<CustomersPage />} />
                       <Route path="/users" element={<UsersPage />} />
                       <Route path="/inventory" element={<InventoryPage />} />
                       <Route

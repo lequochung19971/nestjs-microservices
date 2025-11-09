@@ -64,6 +64,8 @@ import type {
   InventoryStatus,
 } from "../../types";
 
+type InventoryItemWithProduct = InventoryItemDto;
+
 interface InventoryItemsTableProps {
   onCreateInventoryItem: () => void;
   onEditInventoryItem: (item: InventoryItemDto) => void;
@@ -115,6 +117,7 @@ export function InventoryItemsTable({
   };
 
   const { data, isLoading, isError } = useInventoryItems(queryParams);
+  const inventoryItems = (data?.data ?? []) as InventoryItemWithProduct[];
 
   const handleDeleteItem = (item: InventoryItemDto) => {
     setItemToDelete(item);
@@ -180,7 +183,7 @@ export function InventoryItemsTable({
     return <Badge variant="default">{item.quantity} in stock</Badge>;
   };
 
-  const columns: ColumnDef<InventoryItemDto>[] = [
+  const columns: ColumnDef<InventoryItemWithProduct>[] = [
     {
       id: "id",
       accessorKey: "id",
@@ -190,6 +193,37 @@ export function InventoryItemsTable({
           {row.original.id.substring(0, 8)}
         </div>
       ),
+    },
+    {
+      id: "product",
+      header: "Product",
+      cell: ({ row }) => {
+        const product = row.original.product;
+        if (!product) {
+          return (
+            <span className="text-sm text-muted-foreground italic">
+              Unlinked
+            </span>
+          );
+        }
+
+        return (
+          <div className="space-y-1">
+            <div className="font-medium leading-none">{product.name}</div>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <span>SKU: {product.sku}</span>
+              {product.productId && (
+                <span className="font-mono">
+                  #{product.productId.substring(0, 8)}
+                </span>
+              )}
+              {!product.isActive && (
+                <Badge variant="destructive">Inactive</Badge>
+              )}
+            </div>
+          </div>
+        );
+      },
     },
     {
       id: "warehouseId",
@@ -298,7 +332,7 @@ export function InventoryItemsTable({
   ];
 
   const table = useReactTable({
-    data: data?.data || [],
+    data: inventoryItems,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

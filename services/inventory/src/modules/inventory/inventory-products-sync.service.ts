@@ -31,24 +31,22 @@ export class InventoryProductsSyncService {
       }
 
       await this.drizzle.client.transaction(async (tx) => {
-        const [inventoryItem] = await tx
-          .insert(inventoryItems)
+        const [inventoryProduct] = await tx
+          .insert(inventoryProducts)
           .values({
-            quantity: 0,
-            reservedQuantity: 0,
-            status: InventoryStatus.AVAILABLE,
+            productId: productData.id,
+            sku: productData.sku,
+            name: productData.name,
+            isActive: productData.isActive,
+            lastUpdated: new Date(),
           })
-          .returning({
-            id: inventoryItems.id,
-          });
+          .returning();
 
-        await tx.insert(inventoryProducts).values({
-          productId: productData.id,
-          sku: productData.sku,
-          name: productData.name,
-          isActive: productData.isActive,
-          lastUpdated: new Date(),
-          inventoryItemId: inventoryItem.id,
+        await tx.insert(inventoryItems).values({
+          inventoryProductId: inventoryProduct.id,
+          quantity: 0,
+          reservedQuantity: 0,
+          status: InventoryStatus.AVAILABLE,
         });
       });
 
@@ -140,48 +138,48 @@ export class InventoryProductsSyncService {
     }
   }
 
-  async linkProductToInventoryItem(
-    productId: string,
-    inventoryItemId: string,
-  ): Promise<void> {
-    try {
-      await this.drizzle.client
-        .update(inventoryProducts)
-        .set({
-          inventoryItemId,
-          lastUpdated: new Date(),
-        })
-        .where(eq(inventoryProducts.productId, productId));
+  // async linkProductToInventoryItem(
+  //   productId: string,
+  //   inventoryItemId: string,
+  // ): Promise<void> {
+  //   try {
+  //     await this.drizzle.client
+  //       .update(inventoryProducts)
+  //       .set({
+  //         inventoryItemId,
+  //         lastUpdated: new Date(),
+  //       })
+  //       .where(eq(inventoryProducts.productId, productId));
 
-      this.logger.log(
-        `Linked product ${productId} to inventory item ${inventoryItemId}`,
-      );
-    } catch (error) {
-      this.logger.error(
-        `Failed to link product ${productId} to inventory item ${inventoryItemId}: ${error.message}`,
-        error.stack,
-      );
-      throw error;
-    }
-  }
+  //     this.logger.log(
+  //       `Linked product ${productId} to inventory item ${inventoryItemId}`,
+  //     );
+  //   } catch (error) {
+  //     this.logger.error(
+  //       `Failed to link product ${productId} to inventory item ${inventoryItemId}: ${error.message}`,
+  //       error.stack,
+  //     );
+  //     throw error;
+  //   }
+  // }
 
-  async unlinkProductFromInventoryItem(productId: string): Promise<void> {
-    try {
-      await this.drizzle.client
-        .update(inventoryProducts)
-        .set({
-          inventoryItemId: null,
-          lastUpdated: new Date(),
-        })
-        .where(eq(inventoryProducts.productId, productId));
+  // async unlinkProductFromInventoryItem(productId: string): Promise<void> {
+  //   try {
+  //     await this.drizzle.client
+  //       .update(inventoryProducts)
+  //       .set({
+  //         inventoryItemId: null,
+  //         lastUpdated: new Date(),
+  //       })
+  //       .where(eq(inventoryProducts.productId, productId));
 
-      this.logger.log(`Unlinked product ${productId} from inventory item`);
-    } catch (error) {
-      this.logger.error(
-        `Failed to unlink product ${productId} from inventory item: ${error.message}`,
-        error.stack,
-      );
-      throw error;
-    }
-  }
+  //     this.logger.log(`Unlinked product ${productId} from inventory item`);
+  //   } catch (error) {
+  //     this.logger.error(
+  //       `Failed to unlink product ${productId} from inventory item: ${error.message}`,
+  //       error.stack,
+  //     );
+  //     throw error;
+  //   }
+  // }
 }

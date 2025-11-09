@@ -11,12 +11,13 @@ import {
   BaseQueryResponse,
   CreateInventoryItemDto,
   InventoryItemDto,
+  InventoryItemProductDto,
   InventoryStatus,
   QueryInventoryItemRequest,
   UpdateInventoryItemDto,
 } from 'nest-shared/contracts';
 import { DrizzleService } from '../../db/drizzle.service';
-import { inventoryItems, warehouses } from '../../db/schema';
+import { inventoryItems, inventoryProducts, warehouses } from '../../db/schema';
 
 @Injectable()
 export class InventoryItemsService {
@@ -144,6 +145,7 @@ export class InventoryItemsService {
         orderBy: orderClause,
         with: {
           warehouse: true,
+          product: true,
         },
       });
 
@@ -185,6 +187,7 @@ export class InventoryItemsService {
           where: eq(inventoryItems.id, id),
           with: {
             warehouse: true,
+            product: true,
           },
         });
 
@@ -308,6 +311,7 @@ export class InventoryItemsService {
         where: eq(inventoryItems.warehouseId, warehouseId),
         with: {
           warehouse: true,
+          product: true,
         },
       });
 
@@ -331,17 +335,20 @@ export class InventoryItemsService {
       const items = await this.drizzle.client
         .select({
           inventoryItem: inventoryItems,
-          warehouse: warehouses,
+          product: inventoryProducts,
         })
         .from(inventoryItems)
         .innerJoin(
-          sql`inventory_products`,
-          sql`inventory_products.inventory_item_id = inventory_items.id`,
+          inventoryProducts,
+          eq(inventoryProducts.id, inventoryItems.inventoryProductId),
         )
-        .where(sql`inventory_products.product_id = ${productId}`);
+        .where(eq(inventoryProducts.productId, productId));
 
       return items.map((item) =>
-        this.transformToInventoryItemDto(item.inventoryItem),
+        this.transformToInventoryItemDto({
+          ...item.inventoryItem,
+          product: item.product,
+        }),
       );
     } catch (error) {
       this.logger.error(
@@ -394,6 +401,18 @@ export class InventoryItemsService {
   }
 
   private transformToInventoryItemDto(inventoryItem: any): InventoryItemDto {
+    const product = inventoryItem.product
+      ? new InventoryItemProductDto({
+          id: inventoryItem.product.id,
+          productId: inventoryItem.product.productId,
+          sku: inventoryItem.product.sku,
+          name: inventoryItem.product.name,
+          isActive: inventoryItem.product.isActive,
+          mediaUrl: inventoryItem.product.mediaUrl ?? undefined,
+          lastUpdated: inventoryItem.product.lastUpdated,
+        })
+      : undefined;
+
     return new InventoryItemDto({
       id: inventoryItem.id,
       warehouseId: inventoryItem.warehouseId,
@@ -402,6 +421,8 @@ export class InventoryItemsService {
       status: inventoryItem.status,
       reorderPoint: inventoryItem.reorderPoint,
       reorderQuantity: inventoryItem.reorderQuantity,
+      inventoryProductId: inventoryItem.inventoryProductId,
+      product,
       updatedAt: inventoryItem.updatedAt,
     });
   }

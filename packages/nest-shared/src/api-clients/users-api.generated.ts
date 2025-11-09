@@ -245,6 +245,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all customers with pagination and filtering */
+        get: operations["CustomersController_getAllCustomers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/customers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get customer by ID */
+        get: operations["CustomersController_getCustomer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -370,6 +404,16 @@ export interface components {
              *     ]
              */
             roles?: string[];
+            /**
+             * @description Whether the user account is enabled
+             * @example true
+             */
+            enabled?: boolean;
+            /**
+             * @description Whether the email is verified
+             * @example true
+             */
+            emailVerified?: boolean;
         };
         AdminUserDto: {
             /**
@@ -471,6 +515,11 @@ export interface components {
              * @example true
              */
             enabled?: boolean;
+            /**
+             * @description Whether the email is verified
+             * @example true
+             */
+            emailVerified?: boolean;
         };
         RoleAssignmentDto: {
             /**
@@ -507,6 +556,52 @@ export interface components {
         RolesListResponse: {
             /** @description List of available roles */
             roles: components["schemas"]["RoleDto"][];
+        };
+        CustomerDto: {
+            /** @description Customer ID */
+            id: string;
+            /** @description Username */
+            username: string;
+            /** @description Email address */
+            email: string;
+            /** @description First name */
+            firstName?: string;
+            /** @description Last name */
+            lastName?: string;
+            /** @description Whether the account is enabled */
+            enabled: boolean;
+            /** @description Whether the email is verified */
+            emailVerified: boolean;
+            /** @description Creation timestamp */
+            createdTimestamp?: number;
+        };
+        PaginationMeta: {
+            /**
+             * @description Current page number
+             * @example 1
+             */
+            page: number;
+            /**
+             * @description Number of items per page
+             * @example 10
+             */
+            limit: number;
+            /**
+             * @description Total number of items
+             * @example 100
+             */
+            totalCount: number;
+            /**
+             * @description Total number of pages
+             * @example 10
+             */
+            totalPages: number;
+        };
+        CustomerQueryResponse: {
+            /** @description List of items */
+            data: components["schemas"]["CustomerDto"][];
+            /** @description Pagination metadata */
+            meta: components["schemas"]["PaginationMeta"];
         };
     };
     responses: never;
@@ -785,7 +880,7 @@ export interface operations {
                 /** @description Number of items to return */
                 limit?: number;
                 /** @description Number of items to skip */
-                offset?: number;
+                page?: number;
                 /** @description Search term for username or email */
                 search?: string;
                 /** @description Sort field */
@@ -1022,6 +1117,77 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RolesListResponse"];
                 };
+            };
+        };
+    };
+    CustomersController_getAllCustomers: {
+        parameters: {
+            query?: {
+                /** @description Search term for filtering customers */
+                search?: string;
+                /** @description Page number */
+                page?: number;
+                /** @description Items per page */
+                limit?: number;
+                /** @description Sort by */
+                sortBy?: string;
+                /** @description Sort order */
+                sortOrder?: string;
+                /** @description Include total count */
+                includeTotalCount?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Customers retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerQueryResponse"] & {
+                        data?: components["schemas"]["CustomerDto"][];
+                    };
+                };
+            };
+        };
+    };
+    CustomersController_getCustomer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Customer retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Customer not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

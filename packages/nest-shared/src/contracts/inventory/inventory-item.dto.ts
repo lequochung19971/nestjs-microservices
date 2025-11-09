@@ -20,6 +20,63 @@ export enum InventoryStatus {
   RETURNED = 'RETURNED',
 }
 
+export class InventoryItemProductDto {
+  @ApiProperty({
+    description: 'Inventory product entry ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsUUID()
+  id: string;
+
+  @ApiProperty({
+    description: 'Product ID from the catalog service',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsUUID()
+  productId: string;
+
+  @ApiProperty({
+    description: 'Product SKU',
+    example: 'SKU-12345',
+  })
+  @IsString()
+  sku: string;
+
+  @ApiProperty({
+    description: 'Product name',
+    example: 'Wireless Headphones',
+  })
+  @IsString()
+  name: string;
+
+  @ApiProperty({
+    description: 'Whether the product is active in the catalog',
+    example: true,
+  })
+  @IsBoolean()
+  isActive: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Primary media URL for the product',
+    example: 'https://cdn.example.com/products/headphones.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  mediaUrl?: string;
+
+  @ApiProperty({
+    description: 'Last time the product data was synchronized',
+    example: '2024-01-15T10:30:00Z',
+  })
+  @IsDate()
+  @Type(() => Date)
+  lastUpdated: Date;
+
+  constructor(data: Partial<InventoryItemProductDto>) {
+    Object.assign(this, data);
+  }
+}
+
 export class InventoryItemDto {
   @ApiProperty({
     description: 'Inventory item ID',
@@ -72,6 +129,22 @@ export class InventoryItemDto {
   @IsOptional()
   @IsNumber()
   reorderQuantity?: number;
+
+  @ApiPropertyOptional({
+    description: 'Reference to the inventory product entry',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsOptional()
+  @IsUUID()
+  inventoryProductId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Product details linked to this inventory item',
+    type: () => InventoryItemProductDto,
+  })
+  @IsOptional()
+  @Type(() => InventoryItemProductDto)
+  product?: InventoryItemProductDto | null;
 
   @ApiProperty({
     description: 'Last update date',

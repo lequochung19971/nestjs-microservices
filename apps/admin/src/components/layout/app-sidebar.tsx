@@ -15,6 +15,7 @@ import {
   Images,
   ShoppingCart,
   Users,
+  UserCircle,
   LayoutDashboard,
   Warehouse,
   BoxesIcon,
@@ -48,6 +49,11 @@ const mainItems = [
     title: "Orders",
     url: "/orders",
     icon: ShoppingCart,
+  },
+  {
+    title: "Customers",
+    url: "/customers",
+    icon: UserCircle,
   },
   {
     title: "Users",

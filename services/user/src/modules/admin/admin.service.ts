@@ -40,6 +40,9 @@ export class AdminService {
         firstName: userData.firstName,
         lastName: userData.lastName,
         password: userData.password,
+        attributes: {
+          userType: 'admin',
+        },
       });
 
       // Assign admin role(s)
@@ -73,6 +76,7 @@ export class AdminService {
         max: limit,
         first: (page - 1) * limit,
         search,
+        q: 'userType:admin',
       });
 
       // Filter users with admin roles
@@ -81,24 +85,18 @@ export class AdminService {
 
       for (const user of users) {
         const userRoles = await this.getUserClientRoles(user.id);
-        const hasAdminRole = userRoles.some((role) =>
-          this.adminRoles.includes(role.name),
-        );
 
-        if (hasAdminRole) {
-          adminUsers.push({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            enabled: user.enabled,
-            emailVerified: user.emailVerified,
-            createdTimestamp: user.createdTimestamp,
-            roles: userRoles.map((role) => role.name),
-          });
-          total++;
-        }
+        adminUsers.push({
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          enabled: user.enabled,
+          emailVerified: user.emailVerified,
+          createdTimestamp: user.createdTimestamp,
+          roles: userRoles.map((role) => role.name),
+        });
       }
 
       return {
@@ -237,11 +235,17 @@ export class AdminService {
         throw new NotFoundException(`User with ID ${userId} not found`);
       }
 
+      const client =
+        await this.keycloakService.keycloakAdminClient.clients.find({
+          clientId: this.configService.keycloak.clients.admin.clientId,
+          realm: this.configService.keycloak.realm,
+        });
+
       // Find the role
       const role =
-        await this.keycloakService.keycloakAdminClient.roles.findOneByName({
-          name: roleName,
-          realm: this.configService.keycloak.realm,
+        await this.keycloakService.keycloakAdminClient.clients.findRole({
+          roleName: roleName,
+          id: client[0].id,
         });
 
       if (!role) {
@@ -249,10 +253,10 @@ export class AdminService {
       }
 
       // Assign the role to the user
-      await this.keycloakService.keycloakAdminClient.users.addRealmRoleMappings(
+      await this.keycloakService.keycloakAdminClient.users.addClientRoleMappings(
         {
+          clientUniqueId: client[0].id,
           id: userId,
-          realm: this.configService.keycloak.realm,
           roles: [{ id: role.id, name: role.name }],
         },
       );

@@ -27,6 +27,7 @@ import {
   OrderDto,
   ApiQueryResponse,
 } from 'nest-shared/contracts';
+import { Roles, RolesGuard } from 'nest-shared';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OrdersService } from './orders.service';
 
@@ -57,6 +58,32 @@ export class OrdersController {
     @Req() req: Request,
   ): Promise<OrderDto> {
     this.logger.log(`Creating order for customer: ${dto.customerId}`);
+    return this.ordersService.create(dto, req.headers);
+  }
+
+  @Post('admin/create')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles({ resource: 'admin-client', roles: ['admin'] })
+  @ApiOperation({ summary: 'Admin creates order on behalf of customer' })
+  @ApiResponse({
+    status: 201,
+    description: 'Order created successfully by admin',
+    type: OrderDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - validation failed',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - requires admin role',
+  })
+  async createAsAdmin(
+    @Body() dto: CreateOrderDto,
+    @Req() req: Request,
+  ): Promise<OrderDto> {
+    this.logger.log(`Admin creating order for customer: ${dto.customerId}`);
     return this.ordersService.create(dto, req.headers);
   }
 

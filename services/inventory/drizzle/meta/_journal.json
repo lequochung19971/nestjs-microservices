@@ -15,6 +15,13 @@
       "when": 1761384850066,
       "tag": "0001_update_inventory_items_warehouse_id_optional",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762678125748,
+      "tag": "0002_inventory_item_and_product_relation",
+      "breakpoints": true
     }
   ]
 }

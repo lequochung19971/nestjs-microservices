@@ -683,6 +683,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all customers with pagination and filtering */
+        get: operations["CustomersController_getAllCustomers"];
+        put?: never;
+        /** Create a new customer */
+        post: operations["CustomersController_createCustomer"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/customers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get customer by ID */
+        get: operations["CustomersController_getCustomer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/inventory/warehouses": {
         parameters: {
             query?: never;
@@ -959,6 +994,178 @@ export interface paths {
         put?: never;
         /** Process expired inventory reservations */
         post: operations["InventoryReservationsController_processExpired"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List orders with filtering and pagination */
+        get: operations["OrdersController_findAll"];
+        put?: never;
+        /** Create a new order */
+        post: operations["OrdersController_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/admin/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Admin creates order on behalf of customer */
+        post: operations["OrdersController_createAsAdmin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/number/{orderNumber}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get order by order number */
+        get: operations["OrdersController_findByOrderNumber"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get order by ID */
+        get: operations["OrdersController_findOne"];
+        /** Update order */
+        put: operations["OrdersController_update"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel order */
+        post: operations["OrdersController_cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a payment for an order */
+        post: operations["PaymentsController_createPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/process": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Process a payment */
+        post: operations["PaymentsController_processPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}/fail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark a payment as failed */
+        post: operations["PaymentsController_failPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/order/{orderId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get payments for an order */
+        get: operations["PaymentsController_getPaymentsByOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/payments/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get payment by ID */
+        get: operations["PaymentsController_getPayment"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1983,6 +2190,69 @@ export interface components {
             /** @description List of available roles */
             roles: components["schemas"]["RoleDto"][];
         };
+        CreateCustomerDto: {
+            /**
+             * @description Username for the customer account
+             * @example john_doe
+             */
+            username: string;
+            /**
+             * @description Email address
+             * @example john@example.com
+             */
+            email: string;
+            /**
+             * @description Password for the account
+             * @example strongPassword123
+             */
+            password: string;
+            /**
+             * @description First name
+             * @example John
+             */
+            firstName?: string;
+            /**
+             * @description Last name
+             * @example Doe
+             */
+            lastName?: string;
+            /**
+             * @description Whether the user account is enabled
+             * @default true
+             * @example true
+             */
+            enabled: boolean;
+            /**
+             * @description Whether the email is verified
+             * @default false
+             * @example false
+             */
+            emailVerified: boolean;
+        };
+        CustomerDto: {
+            /** @description Customer ID */
+            id: string;
+            /** @description Username */
+            username: string;
+            /** @description Email address */
+            email: string;
+            /** @description First name */
+            firstName?: string;
+            /** @description Last name */
+            lastName?: string;
+            /** @description Whether the account is enabled */
+            enabled: boolean;
+            /** @description Whether the email is verified */
+            emailVerified: boolean;
+            /** @description Creation timestamp */
+            createdTimestamp?: number;
+        };
+        CustomerQueryResponse: {
+            /** @description List of items */
+            data: components["schemas"]["CustomerDto"][];
+            /** @description Pagination metadata */
+            meta: components["schemas"]["PaginationMeta"];
+        };
         CreateWarehouseDto: {
             /**
              * @description Warehouse name
@@ -2087,6 +2357,44 @@ export interface components {
              */
             reorderQuantity?: number;
         };
+        InventoryItemProductDto: {
+            /**
+             * @description Inventory product entry ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            id: string;
+            /**
+             * @description Product ID from the catalog service
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            productId: string;
+            /**
+             * @description Product SKU
+             * @example SKU-12345
+             */
+            sku: string;
+            /**
+             * @description Product name
+             * @example Wireless Headphones
+             */
+            name: string;
+            /**
+             * @description Whether the product is active in the catalog
+             * @example true
+             */
+            isActive: boolean;
+            /**
+             * @description Primary media URL for the product
+             * @example https://cdn.example.com/products/headphones.jpg
+             */
+            mediaUrl?: string;
+            /**
+             * Format: date-time
+             * @description Last time the product data was synchronized
+             * @example 2024-01-15T10:30:00Z
+             */
+            lastUpdated: string;
+        };
         InventoryItemDto: {
             /**
              * @description Inventory item ID
@@ -2125,6 +2433,13 @@ export interface components {
              */
             reorderQuantity?: number;
             /**
+             * @description Reference to the inventory product entry
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            inventoryProductId?: string;
+            /** @description Product details linked to this inventory item */
+            product?: components["schemas"]["InventoryItemProductDto"];
+            /**
              * Format: date-time
              * @description Last update date
              * @example 2024-01-15T10:30:00Z
@@ -2159,6 +2474,11 @@ export interface components {
              * @example 75
              */
             reorderQuantity?: number;
+            /**
+             * @description Warehouse ID
+             * @example 123e4567-e89b-12d3-a456-426614174000
+             */
+            warehouseId?: string;
         };
         AdjustQuantityDto: {
             /**
@@ -2361,6 +2681,238 @@ export interface components {
              * @example Customer cancelled order
              */
             reason?: string;
+        };
+        CreateOrderItemDto: {
+            /** @description Product ID */
+            productId: string;
+            /** @description Quantity */
+            quantity: number;
+            /** @description Unit price override */
+            unitPrice?: number;
+        };
+        CreateShippingAddressDto: {
+            /** @description Full name */
+            fullName: string;
+            /** @description Phone number */
+            phone?: string;
+            /** @description Address line 1 */
+            addressLine1: string;
+            /** @description Address line 2 */
+            addressLine2?: string;
+            /** @description City */
+            city: string;
+            /** @description State/Province */
+            state?: string;
+            /** @description Postal code */
+            postalCode: string;
+            /** @description Country */
+            country: string;
+        };
+        CreateBillingAddressDto: {
+            /** @description Full name */
+            fullName: string;
+            /** @description Phone number */
+            phone?: string;
+            /** @description Address line 1 */
+            addressLine1: string;
+            /** @description Address line 2 */
+            addressLine2?: string;
+            /** @description City */
+            city: string;
+            /** @description State/Province */
+            state?: string;
+            /** @description Postal code */
+            postalCode: string;
+            /** @description Country */
+            country: string;
+        };
+        CreateOrderDto: {
+            /** @description Customer ID */
+            customerId: string;
+            /** @description Order items */
+            items: components["schemas"]["CreateOrderItemDto"][];
+            /** @description Shipping address */
+            shippingAddress: components["schemas"]["CreateShippingAddressDto"];
+            /** @description Billing address */
+            billingAddress?: components["schemas"]["CreateBillingAddressDto"];
+            /**
+             * @description Payment method
+             * @enum {string}
+             */
+            paymentMethod?: "CREDIT_CARD" | "DEBIT_CARD" | "PAYPAL" | "BANK_TRANSFER" | "CASH_ON_DELIVERY";
+            /**
+             * @description Shipping method
+             * @enum {string}
+             */
+            shippingMethod?: "STANDARD" | "EXPRESS" | "OVERNIGHT" | "PICKUP";
+            /** @description Order notes */
+            notes?: string;
+        };
+        OrderProductDto: {
+            id: string;
+            orderId: string;
+            productId: string;
+            sku: string;
+            name: string;
+            description?: string;
+            price: string;
+            currency: string;
+        };
+        OrderItemDto: {
+            id: string;
+            orderId: string;
+            orderProductId: string;
+            quantity: number;
+            unitPrice: string;
+            totalPrice: string;
+            discountAmount: string;
+            taxAmount: string;
+            inventoryReservationId?: string;
+            product?: components["schemas"]["OrderProductDto"];
+        };
+        ShippingAddressDto: {
+            id: string;
+            orderId: string;
+            fullName: string;
+            phone?: string;
+            addressLine1: string;
+            addressLine2?: string;
+            city: string;
+            state?: string;
+            postalCode: string;
+            country: string;
+            isDefault: boolean;
+        };
+        BillingAddressDto: {
+            id: string;
+            orderId: string;
+            fullName: string;
+            phone?: string;
+            addressLine1: string;
+            addressLine2?: string;
+            city: string;
+            state?: string;
+            postalCode: string;
+            country: string;
+            isDefault: boolean;
+        };
+        OrderStatusHistoryDto: {
+            id: string;
+            orderId: string;
+            /** @enum {string} */
+            status: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
+            notes?: string;
+            changedBy?: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        PaymentDto: {
+            id: string;
+            orderId: string;
+            transactionId?: string;
+            amount: string;
+            /** @enum {string} */
+            status: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+            /** @enum {string} */
+            method: "CREDIT_CARD" | "DEBIT_CARD" | "PAYPAL" | "BANK_TRANSFER" | "CASH_ON_DELIVERY";
+            metadata?: string;
+            /** Format: date-time */
+            processedAt?: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        OrderDto: {
+            id: string;
+            orderNumber: string;
+            customerId: string;
+            /** @enum {string} */
+            status: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
+            /** @enum {string} */
+            paymentStatus: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+            /** @enum {string} */
+            paymentMethod?: "CREDIT_CARD" | "DEBIT_CARD" | "PAYPAL" | "BANK_TRANSFER" | "CASH_ON_DELIVERY";
+            /** @enum {string} */
+            shippingMethod?: "STANDARD" | "EXPRESS" | "OVERNIGHT" | "PICKUP";
+            subtotal: string;
+            taxAmount: string;
+            shippingCost: string;
+            discountAmount: string;
+            totalAmount: string;
+            notes?: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: date-time */
+            confirmedAt?: string;
+            /** Format: date-time */
+            shippedAt?: string;
+            /** Format: date-time */
+            deliveredAt?: string;
+            /** Format: date-time */
+            cancelledAt?: string;
+            items?: components["schemas"]["OrderItemDto"][];
+            shippingAddress?: components["schemas"]["ShippingAddressDto"];
+            billingAddress?: components["schemas"]["BillingAddressDto"];
+            statusHistory?: components["schemas"]["OrderStatusHistoryDto"][];
+            payments?: components["schemas"]["PaymentDto"][];
+        };
+        OrderQueryResponse: {
+            /** @description List of items */
+            data: components["schemas"]["OrderDto"][];
+            /** @description Pagination metadata */
+            meta: components["schemas"]["PaginationMeta"];
+        };
+        QueryOrderResponseDto: {
+            /** @description List of items */
+            data?: components["schemas"]["OrderDto"][];
+            /** @description Pagination metadata */
+            meta: components["schemas"]["PaginationMeta"];
+        };
+        UpdateOrderDto: {
+            /**
+             * @description Order status
+             * @enum {string}
+             */
+            status?: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
+            /**
+             * @description Payment status
+             * @enum {string}
+             */
+            paymentStatus?: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+            /**
+             * @description Payment method
+             * @enum {string}
+             */
+            paymentMethod?: "CREDIT_CARD" | "DEBIT_CARD" | "PAYPAL" | "BANK_TRANSFER" | "CASH_ON_DELIVERY";
+            /**
+             * @description Shipping method
+             * @enum {string}
+             */
+            shippingMethod?: "STANDARD" | "EXPRESS" | "OVERNIGHT" | "PICKUP";
+            /** @description Order notes */
+            notes?: string;
+        };
+        CreatePaymentDto: {
+            /** @description Order ID */
+            orderId: string;
+            /** @description Payment amount */
+            amount: string;
+            /**
+             * @description Payment method
+             * @enum {string}
+             */
+            method: "CREDIT_CARD" | "DEBIT_CARD" | "PAYPAL" | "BANK_TRANSFER" | "CASH_ON_DELIVERY";
+            /** @description Transaction ID from payment provider */
+            transactionId?: string;
+            /** @description Additional payment metadata */
+            metadata?: string;
+        };
+        ProcessPaymentDto: {
+            /** @description Transaction ID from payment provider */
+            transactionId: string;
+            /** @description Additional payment metadata */
+            metadata?: string;
         };
     };
     responses: never;
@@ -4084,6 +4636,150 @@ export interface operations {
             };
         };
     };
+    CustomersController_getAllCustomers: {
+        parameters: {
+            query?: {
+                /** @description Search term for filtering customers */
+                search?: string;
+                /** @description Page number */
+                page?: number;
+                /** @description Items per page */
+                limit?: number;
+                /** @description Sort by */
+                sortBy?: string;
+                /** @description Sort order */
+                sortOrder?: string;
+                /** @description Include total count */
+                includeTotalCount?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Customers retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerQueryResponse"] & {
+                        data?: components["schemas"]["CustomerDto"][];
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CustomersController_createCustomer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCustomerDto"];
+            };
+        };
+        responses: {
+            /** @description Customer created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDto"];
+                };
+            };
+            /** @description Invalid input data */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Customer already exists */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CustomersController_getCustomer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Customer retrieved successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CustomerDto"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Customer not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     WarehousesController_findAll: {
         parameters: {
             query?: {
@@ -4860,6 +5556,420 @@ export interface operations {
         responses: {
             /** @description Expired reservations processed successfully */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrdersController_findAll: {
+        parameters: {
+            query?: {
+                /** @description Search query */
+                search?: string;
+                /** @description Page number */
+                page?: number;
+                /** @description Limit number */
+                limit?: number;
+                /** @description Sort by */
+                sortBy?: string;
+                /** @description Sort order */
+                sortOrder?: string;
+                /** @description Include total count */
+                includeTotalCount?: boolean;
+                /** @description Filter by customer ID */
+                customerId?: string;
+                /** @description Filter by order status */
+                status?: "PENDING" | "CONFIRMED" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "REFUNDED";
+                /** @description Filter by payment status */
+                paymentStatus?: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "PARTIALLY_REFUNDED";
+                /** @description Include order items */
+                includeItems?: boolean;
+                /** @description Include shipping address */
+                includeShippingAddress?: boolean;
+                /** @description Include billing address */
+                includeBillingAddress?: boolean;
+                /** @description Include status history */
+                includeStatusHistory?: boolean;
+                /** @description Include payments */
+                includePayments?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of orders */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryOrderResponseDto"];
+                };
+            };
+            default: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderQueryResponse"] & {
+                        data?: components["schemas"]["OrderDto"][];
+                    };
+                };
+            };
+        };
+    };
+    OrdersController_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Order created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+            /** @description Bad request - validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrdersController_createAsAdmin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Order created successfully by admin */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+            /** @description Bad request - validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Forbidden - requires admin role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrdersController_findByOrderNumber: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Order number */
+                orderNumber: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrdersController_findOne: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Order ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrdersController_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Order ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Order updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OrdersController_cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Order ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order cancelled successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDto"];
+                };
+            };
+            /** @description Cannot cancel order */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_createPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePaymentDto"];
+            };
+        };
+        responses: {
+            /** @description Payment created successfully */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+            /** @description Bad request - validation failed */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Order not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_processPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Payment ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProcessPaymentDto"];
+            };
+        };
+        responses: {
+            /** @description Payment processed successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+            /** @description Payment not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_failPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Payment ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment marked as failed */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+            /** @description Payment not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PaymentsController_getPaymentsByOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Order ID */
+                orderId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of payments */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"][];
+                };
+            };
+        };
+    };
+    PaymentsController_getPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Payment ID */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment details */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDto"];
+                };
+            };
+            /** @description Payment not found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

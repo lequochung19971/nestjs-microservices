@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { KeycloakService } from 'nest-shared';
@@ -82,6 +83,9 @@ export class AuthService {
         password: userData.password,
       });
 
+      // Assign customer role to the newly registered user
+      await this.assignCustomerRole(user.id);
+
       return {
         message: 'User registered successfully',
         userId: user.id,
@@ -93,6 +97,39 @@ export class AuthService {
         throw error;
       }
       throw new Error('Failed to register user');
+    }
+  }
+
+  private async assignCustomerRole(userId: string): Promise<void> {
+    try {
+      // Find the customer role
+      const role =
+        await this.keycloakService.keycloakAdminClient.roles.findOneByName({
+          name: 'customer',
+          realm: this.configService.keycloak.realm,
+        });
+
+      if (!role) {
+        this.logger.warn('Customer role not found in Keycloak');
+        throw new NotFoundException('Customer role not found');
+      }
+
+      // Assign the role to the user
+      await this.keycloakService.keycloakAdminClient.users.addRealmRoleMappings(
+        {
+          id: userId,
+          realm: this.configService.keycloak.realm,
+          roles: [{ id: role.id, name: role.name }],
+        },
+      );
+
+      this.logger.log(`Assigned customer role to user ${userId}`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to assign customer role: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 

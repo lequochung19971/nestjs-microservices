@@ -60,10 +60,16 @@ export const inventoryItems = pgTable(
     reorderPoint: integer('reorder_point'),
     reorderQuantity: integer('reorder_quantity'),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    inventoryProductId: uuid('inventory_product_id').references(
+      () => inventoryProducts.id,
+    ),
   },
   (table) => [
     index('inventory_warehouse_idx').on(table.warehouseId),
     index('inventory_status_idx').on(table.status),
+    index('inventory_product_inventory_product_id_idx').on(
+      table.inventoryProductId,
+    ),
   ],
 );
 
@@ -77,14 +83,8 @@ export const inventoryProducts = pgTable(
     isActive: boolean('is_active').notNull(),
     mediaUrl: varchar('media_url', { length: 1000 }), // Primary image URL
     lastUpdated: timestamp('last_updated').notNull(),
-    inventoryItemId: uuid('inventory_item_id')
-      .notNull()
-      .references(() => inventoryItems.id),
   },
-  (table) => [
-    index('inventory_product_product_id_idx').on(table.productId),
-    index('inventory_product_inventory_item_idx').on(table.inventoryItemId),
-  ],
+  (table) => [index('inventory_product_product_id_idx').on(table.productId)],
 );
 
 // Inventory transactions table - tracks all movements of inventory
@@ -143,10 +143,7 @@ export const warehousesRelations = relations(warehouses, ({ many }) => ({
 export const inventoryProductsRelations = relations(
   inventoryProducts,
   ({ one }) => ({
-    inventoryItem: one(inventoryItems, {
-      fields: [inventoryProducts.inventoryItemId],
-      references: [inventoryItems.id],
-    }),
+    inventoryItem: one(inventoryItems),
   }),
 );
 
@@ -159,6 +156,10 @@ export const inventoryItemsRelations = relations(
     }),
     transactions: many(inventoryTransactions),
     reservations: many(inventoryReservations),
+    product: one(inventoryProducts, {
+      fields: [inventoryItems.inventoryProductId],
+      references: [inventoryProducts.id],
+    }),
   }),
 );
 

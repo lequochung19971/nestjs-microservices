@@ -90,6 +90,7 @@ export class KeycloakService {
     firstName?: string;
     lastName?: string;
     password: string;
+    attributes?: Record<string, any>;
   }) {
     try {
       const user = await this.keycloakAdminService.adminClient.users.create({
@@ -105,6 +106,7 @@ export class KeycloakService {
             temporary: false,
           },
         ],
+        attributes: userData.attributes || {},
       });
 
       this.logger.log(`User created successfully: ${userData.username}`);
