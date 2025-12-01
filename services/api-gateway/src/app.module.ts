@@ -23,6 +23,8 @@ import { InventoryModule } from './modules/inventory';
 import { OrdersModule } from './modules/orders';
 import { PaymentsModule } from './modules/payments';
 
+console.log('TEST');
+
 @Module({
   imports: [
     AppConfigModule,
