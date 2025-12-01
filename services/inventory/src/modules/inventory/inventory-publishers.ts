@@ -8,6 +8,7 @@ import {
 import {
   InventoryReservedEvent,
   InventoryReleasedEvent,
+  InventoryReservationFailedEvent,
   InventoryUpdatedEvent,
   LowStockAlertEvent,
 } from 'nest-shared/events';
@@ -115,6 +116,7 @@ export class InventoryPublishers extends BaseMessagingService {
     reservationId: string;
     inventoryItemId: string;
     orderId: string;
+    productId: string;
     quantity: number;
     expiresAt?: string;
   }) {
@@ -123,6 +125,7 @@ export class InventoryPublishers extends BaseMessagingService {
         reservationId: data.reservationId,
         inventoryItemId: data.inventoryItemId,
         orderId: data.orderId,
+        productId: data.productId,
         quantity: data.quantity,
         expiresAt: data.expiresAt,
       });
@@ -176,6 +179,39 @@ export class InventoryPublishers extends BaseMessagingService {
     } catch (error) {
       this.logger.error(
         `Failed to publish inventory released event for reservation: ${data.reservationId}`,
+        error,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Publish an event when inventory reservation fails
+   */
+  async publishInventoryReservationFailed(data: {
+    orderId: string;
+    productId: string;
+    reason: string;
+  }) {
+    try {
+      const event = new InventoryReservationFailedEvent({
+        orderId: data.orderId,
+        productId: data.productId,
+        reason: data.reason,
+      });
+
+      await this.rabbitMQService.publish(
+        Exchange.EVENTS,
+        RoutingKey.INVENTORY_RESERVATION_FAILED,
+        event,
+      );
+
+      this.logger.log(
+        `Inventory reservation failed event published for order: ${data.orderId}, product: ${data.productId}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Failed to publish inventory reservation failed event for order: ${data.orderId}`,
         error,
       );
       throw error;

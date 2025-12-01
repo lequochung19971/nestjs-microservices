@@ -68,6 +68,7 @@ export class InventoryReservedEvent {
   reservationId: string;
   inventoryItemId: string;
   orderId: string;
+  productId: string;
   quantity: number;
   expiresAt?: string;
   timestamp: string;
@@ -76,6 +77,7 @@ export class InventoryReservedEvent {
     reservationId: string;
     inventoryItemId: string;
     orderId: string;
+    productId: string;
     quantity: number;
     expiresAt?: string;
     timestamp?: string;
@@ -83,6 +85,7 @@ export class InventoryReservedEvent {
     this.reservationId = data.reservationId;
     this.inventoryItemId = data.inventoryItemId;
     this.orderId = data.orderId;
+    this.productId = data.productId;
     this.quantity = data.quantity;
     this.expiresAt = data.expiresAt;
     this.timestamp = data.timestamp || new Date().toISOString();
@@ -109,6 +112,25 @@ export class InventoryReleasedEvent {
     this.inventoryItemId = data.inventoryItemId;
     this.orderId = data.orderId;
     this.quantity = data.quantity;
+    this.reason = data.reason;
+    this.timestamp = data.timestamp || new Date().toISOString();
+  }
+}
+
+export class InventoryReservationFailedEvent {
+  orderId: string;
+  productId: string;
+  reason: string;
+  timestamp: string;
+
+  constructor(data: {
+    orderId: string;
+    productId: string;
+    reason: string;
+    timestamp?: string;
+  }) {
+    this.orderId = data.orderId;
+    this.productId = data.productId;
     this.reason = data.reason;
     this.timestamp = data.timestamp || new Date().toISOString();
   }

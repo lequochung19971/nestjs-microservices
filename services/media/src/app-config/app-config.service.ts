@@ -57,6 +57,15 @@ export interface AllConfig {
   rabbitmq: RabbitMQConfig;
 }
 
+export interface StorageConfig {
+  endpoint: string;
+  port: number;
+  useSSL: boolean;
+  accessKey: string;
+  secretKey: string;
+  bucketName: string;
+}
+
 @Injectable()
 export class AppConfigService {
   constructor(private configService: ConfigService) {}

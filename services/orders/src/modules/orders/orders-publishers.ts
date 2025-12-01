@@ -16,7 +16,7 @@ export class OrdersPublishers {
 
   constructor(private readonly rabbitMQService: RabbitMQService) {}
 
-  async publishOrderCreated(event: OrderCreatedEvent): Promise<void> {
+  async publishOrderCreated(event: OrderCreatedEvent) {
     try {
       await this.rabbitMQService.publish(
         Exchange.EVENTS,
@@ -29,12 +29,13 @@ export class OrdersPublishers {
         `Failed to publish order created event: ${error.message}`,
         error.stack,
       );
+      throw error;
     }
   }
 
-  async publishOrderUpdated(event: OrderUpdatedEvent): Promise<void> {
+  publishOrderUpdated(event: OrderUpdatedEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.ORDER_UPDATED,
         event.data,
@@ -48,9 +49,9 @@ export class OrdersPublishers {
     }
   }
 
-  async publishOrderCancelled(event: OrderCancelledEvent): Promise<void> {
+  publishOrderCancelled(event: OrderCancelledEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.ORDER_CANCELLED,
         event.data,
@@ -61,12 +62,13 @@ export class OrdersPublishers {
         `Failed to publish order cancelled event: ${error.message}`,
         error.stack,
       );
+      throw error;
     }
   }
 
-  async publishOrderConfirmed(event: OrderConfirmedEvent): Promise<void> {
+  publishOrderConfirmed(event: OrderConfirmedEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.ORDER_CONFIRMED,
         event.data,
@@ -77,12 +79,13 @@ export class OrdersPublishers {
         `Failed to publish order confirmed event: ${error.message}`,
         error.stack,
       );
+      throw error;
     }
   }
 
-  async publishOrderShipped(event: OrderShippedEvent): Promise<void> {
+  publishOrderShipped(event: OrderShippedEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.ORDER_SHIPPED,
         event.data,
@@ -93,12 +96,13 @@ export class OrdersPublishers {
         `Failed to publish order shipped event: ${error.message}`,
         error.stack,
       );
+      throw error;
     }
   }
 
-  async publishOrderDelivered(event: OrderDeliveredEvent): Promise<void> {
+  publishOrderDelivered(event: OrderDeliveredEvent) {
     try {
-      await this.rabbitMQService.publish(
+      this.rabbitMQService.publish(
         Exchange.EVENTS,
         RoutingKey.ORDER_DELIVERED,
         event.data,
@@ -109,6 +113,7 @@ export class OrdersPublishers {
         `Failed to publish order delivered event: ${error.message}`,
         error.stack,
       );
+      throw error;
     }
   }
 

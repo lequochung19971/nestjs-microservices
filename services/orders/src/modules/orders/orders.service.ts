@@ -579,7 +579,32 @@ export class OrdersService {
 
   async handleInventoryReserved(data: InventoryReservedEvent): Promise<void> {
     try {
-      const { orderId, reservationId, inventoryItemId } = data;
+      const { orderId, reservationId, productId } = data;
+
+      // Find the order item by joining with order products to match by productId
+      const orderItemToUpdate = await this.drizzle.client
+        .select({
+          id: orderItems.id,
+        })
+        .from(orderItems)
+        .innerJoin(
+          orderProducts,
+          eq(orderProducts.id, orderItems.orderProductId),
+        )
+        .where(
+          and(
+            eq(orderItems.orderId, orderId),
+            eq(orderProducts.productId, productId),
+          ),
+        )
+        .limit(1);
+
+      if (orderItemToUpdate.length === 0) {
+        this.logger.warn(
+          `No order item found for order ${orderId} and product ${productId}`,
+        );
+        return;
+      }
 
       // Update order item with reservation ID
       await this.drizzle.client
@@ -587,9 +612,11 @@ export class OrdersService {
         .set({
           inventoryReservationId: reservationId,
         })
-        .where(eq(orderItems.id, inventoryItemId));
+        .where(eq(orderItems.id, orderItemToUpdate[0].id));
 
-      this.logger.log(`Inventory reserved for order ${orderId}`);
+      this.logger.log(
+        `Inventory reserved for order ${orderId}, product ${productId}, reservation ${reservationId}`,
+      );
     } catch (error) {
       this.logger.error(
         `Failed to handle inventory reserved: ${error.message}`,

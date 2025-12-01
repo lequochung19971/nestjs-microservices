@@ -10,8 +10,12 @@ import {
   ProductCreatedEvent,
   ProductDeletedEvent,
   ProductUpdatedEvent,
+  OrderCreatedEvent,
+  OrderCancelledEvent,
+  OrderShippedEvent,
 } from 'nest-shared/events';
 import { InventoryProductsSyncService } from './inventory-products-sync.service';
+import { InventoryOrderHandlerService } from './inventory-order-handler.service';
 
 @Injectable()
 export class InventoryConsumers extends BaseMessagingService {
@@ -20,6 +24,7 @@ export class InventoryConsumers extends BaseMessagingService {
   constructor(
     rabbitMQService: RabbitMQService,
     private readonly inventoryProductsSyncService: InventoryProductsSyncService,
+    private readonly inventoryOrderHandlerService: InventoryOrderHandlerService,
   ) {
     super(rabbitMQService);
   }
@@ -96,6 +101,63 @@ export class InventoryConsumers extends BaseMessagingService {
     } catch (error) {
       this.logger.error(
         `Failed to handle product deleted event for product ${message.id}: ${error.message}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Handle order created events from the Orders service
+   */
+  @Subscribe({
+    exchange: Exchange.EVENTS,
+    routingKey: RoutingKey.ORDER_CREATED,
+  })
+  async handleOrderCreated(message: OrderCreatedEvent) {
+    this.logger.log(`Order created event received: ${message.data.id}`);
+    try {
+      await this.inventoryOrderHandlerService.handleOrderCreated(message);
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle order created event for order ${message.data.id}: ${error.message}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Handle order cancelled events from the Orders service
+   */
+  @Subscribe({
+    exchange: Exchange.EVENTS,
+    routingKey: RoutingKey.ORDER_CANCELLED,
+  })
+  async handleOrderCancelled(message: OrderCancelledEvent) {
+    this.logger.log(`Order cancelled event received: ${message.data.id}`);
+    try {
+      await this.inventoryOrderHandlerService.handleOrderCancelled(message);
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle order cancelled event for order ${message.data.id}: ${error.message}`,
+        error,
+      );
+    }
+  }
+
+  /**
+   * Handle order shipped events from the Orders service
+   */
+  @Subscribe({
+    exchange: Exchange.EVENTS,
+    routingKey: RoutingKey.ORDER_SHIPPED,
+  })
+  async handleOrderShipped(message: OrderShippedEvent) {
+    this.logger.log(`Order shipped event received: ${message.data.id}`);
+    try {
+      await this.inventoryOrderHandlerService.handleOrderShipped(message);
+    } catch (error) {
+      this.logger.error(
+        `Failed to handle order shipped event for order ${message.data.id}: ${error.message}`,
         error,
       );
     }

@@ -10,6 +10,7 @@ import { InventoryTransactionsController } from './inventory-transactions.contro
 import { InventoryTransactionsService } from './inventory-transactions.service';
 import { WarehousesController } from './warehouses.controller';
 import { WarehousesService } from './warehouses.service';
+import { InventoryOrderHandlerService } from './inventory-order-handler.service';
 
 @Module({
   controllers: [
@@ -24,6 +25,7 @@ import { WarehousesService } from './warehouses.service';
     InventoryReservationsService,
     WarehousesService,
     InventoryProductsSyncService,
+    InventoryOrderHandlerService,
     InventoryConsumers,
     InventoryPublishers,
   ],
@@ -33,6 +35,7 @@ import { WarehousesService } from './warehouses.service';
     InventoryReservationsService,
     WarehousesService,
     InventoryProductsSyncService,
+    InventoryOrderHandlerService,
     InventoryConsumers,
     InventoryPublishers,
   ],
